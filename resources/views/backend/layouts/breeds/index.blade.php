@@ -53,6 +53,7 @@
                                             <th>Title</th>
                                             <th>Content</th>
                                             <th>Image</th>
+                                            <th>Type</th>
                                             <th>Actions</th>
                                         </tr>
                                         </thead>
@@ -147,6 +148,13 @@
                         {
                             data: 'image',
                             name: 'image',
+                            orderable: true,
+                            searchable: true
+                        },
+
+                        {
+                            data: 'type',
+                            name: 'type',
                             orderable: true,
                             searchable: true
                         },

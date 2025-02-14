@@ -28,6 +28,11 @@ class BreedController extends Controller
                     $content = strip_tags($data->content);
                     return $content;
                 })
+                ->addColumn('type', function ($data) {
+                    // Strip HTML tags and truncate the content
+                    $type = ucfirst($data->type);
+                    return $type;
+                })
                 ->addColumn('action', function ($data) {
                     return '<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
                    <a href="' . route('admin.breed.edit', $data->id) . '" class="btn btn-primary text-white" title="View">
@@ -38,7 +43,7 @@ class BreedController extends Controller
                    </a>
                </div>';
                 })
-                ->rawColumns(['action','content','image'])
+                ->rawColumns(['action','content','image', 'type'])
                 ->make();
         }
         return view('backend.layouts.breeds.index');

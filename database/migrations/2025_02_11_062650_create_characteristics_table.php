@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('characteristics', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('breed_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('breed_id');
+            $table->foreign('breed_id')->references('id')->on('breeds')->onDelete('cascade');
             $table->string('title');
             $table->text('content')->nullable();
             $table->string('image')->nullable();
             $table->timestamps();
         });
+
     }
 
     /**

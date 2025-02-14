@@ -15,6 +15,13 @@
 
     @stack('styles')
 
+    <style>
+        .page-content{
+            background-color: #f3f3f9;
+            min-height: 100vh;
+        }
+    </style>
+
 </head>
 
 <body>

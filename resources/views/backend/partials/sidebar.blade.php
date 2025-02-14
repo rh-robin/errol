@@ -75,13 +75,23 @@
                 {{--=========================== TIPS AND CARE END ==================--}}
 
 
-                {{--=========================== TIPS AND CARE START ==================--}}
+                {{--=========================== Breeds START ==================--}}
                 <li class="nav-item">
-                    <a class="nav-link menu-link {{ Request::routeIs('admin.breed.*') ? 'active' : '' }}" href="{{ route('admin.breed.index') }}" role="button" aria-expanded="false" aria-controls="tips_care">
-                        <i class="ri-dashboard-2-line"></i> <span data-key="t-dashboards">Breeds</span>
+                    <a class="nav-link menu-link {{ Request::routeIs('admin.breed.*') ? 'active' : '' }}" href="#Breeds" data-bs-toggle="collapse" role="button" aria-expanded="{{ Request::routeIs('admin.breed.*') ? 'true' : 'false' }}" aria-controls="Breeds">
+                        <i class="ri-layout-3-line"></i> <span data-key="t-layouts">Breeds</span>
                     </a>
+                    <div class="collapse menu-dropdown {{ Request::routeIs('admin.breed.*') ? 'show' : '' }}" id="Breeds">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="{{ route('admin.breed.index') }}" class="nav-link {{ Request::routeIs('admin.breed.index') ? 'active' : '' }}" data-key="t-horizontal">All Breeds</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.breed.characteristic.create') }}" class="nav-link {{ Request::routeIs('admin.breed.characteristic.create') ? 'active' : '' }}" data-key="t-detached">Breed's Characteristics</a>
+                            </li>
+                        </ul>
+                    </div>
                 </li> <!-- end Dashboard Menu -->
-                {{--=========================== TIPS AND CARE END ==================--}}
+                {{--=========================== Breeds END ==================--}}
 
 
                 <li class="nav-item">
