@@ -12,7 +12,7 @@ use Laravel\Socialite\Facades\Socialite;
 use Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class SocialLoginController extends BaseController
+class SocialLoginController extends Controller
 {
     use ResponseTrait;
     public function SocialLogin(Request $request)
@@ -36,6 +36,8 @@ class SocialLoginController extends BaseController
                         'name'              => $socialUser->getName(),
                         'email'             => $socialUser->getEmail(),
                         'password'          => bcrypt($password),
+                        'provider'          => $provider,
+                        'provider_id'       => $socialUser->getId(),
                         'email_verified_at' => now(),
                     ]);
                     $isNewUser = true;
@@ -58,7 +60,10 @@ class SocialLoginController extends BaseController
                 return $this->sendResponse($success, $message, $token);
 
             } else {
-                return $this->sendError('');
+                $error = 'Invalid credentials';
+                $errorMessages = ['Invalid credentials'];
+                $code = 404;
+                return $this->sendError($error, $errorMessages, $code);
             }
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage(), [], 401);
