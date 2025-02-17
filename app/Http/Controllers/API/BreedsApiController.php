@@ -11,7 +11,7 @@ class BreedsApiController extends Controller
 {
     use ResponseTrait;
     public function index(){
-        $data = Breed::all();
+        $data = Breed::with('characteristics')->get();
         $message = '';
         return $this->sendResponse($data, $message, '', 200);
     }
