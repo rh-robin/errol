@@ -38,6 +38,7 @@ class SocialLoginController extends Controller
                         'password'          => bcrypt($password),
                         'provider'          => $provider,
                         'provider_id'       => $socialUser->getId(),
+                        'role'              => 'user',
                         'email_verified_at' => now(),
                     ]);
                     $isNewUser = true;
