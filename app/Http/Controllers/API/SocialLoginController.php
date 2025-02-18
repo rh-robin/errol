@@ -19,7 +19,7 @@ class SocialLoginController extends Controller
     {
         $request->validate([
             'token'    => 'required',
-            'provider' => 'required|in:google',
+            'provider' => 'required|in:google,twitter',
         ]);
 
         try {
@@ -27,13 +27,15 @@ class SocialLoginController extends Controller
             $socialUser = Socialite::driver($provider)->stateless()->userFromToken($request->token);
 
             if ($socialUser) {
-                $user      = User::where('email', $socialUser->email)->first();
+                $user = User::where('email', $socialUser->email)
+                    ->orWhere('provider_id', $socialUser->getId())
+                    ->first();
                 $isNewUser = false;
 
                 if (!$user) {
                     $password = Str::random(16);
                     $user     = User::create([
-                        'name'              => $socialUser->getName(),
+                        'name'              => $socialUser->getName() ?? $socialUser->getNickname(),
                         'email'             => $socialUser->getEmail(),
                         'password'          => bcrypt($password),
                         'provider'          => $provider,
