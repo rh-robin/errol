@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tips_cares', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->text('sub_title');
             $table->string('image')->nullable();
             $table->text('content');
             $table->timestamps();
