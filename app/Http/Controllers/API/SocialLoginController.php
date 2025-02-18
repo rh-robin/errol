@@ -55,7 +55,7 @@ class SocialLoginController extends Controller
                 ];
 
                 // Evaluate the message based on the $isNewUser condition
-                $message = $isNewUser ? 'User registered successfully' : 'User logged in successfully';
+                $message = $isNewUser ? 'User registered and logged in successfully' : 'User logged in successfully';
 
                 // Call sendResponse from BaseController and pass the token
                 return $this->sendResponse($success, $message, $token);
@@ -73,10 +73,13 @@ class SocialLoginController extends Controller
 
     public function logout()
     {
-        auth('api')->logout();
-
-        // Return successful response for logout
-        return $this->sendResponse([], 'Successfully logged out');
+        try {
+            // Invalidate the token
+            JWTAuth::invalidate(JWTAuth::getToken());
+            return $this->sendResponse([], 'User logged out successfully', 200);
+        } catch (\Exception $e) {
+            return $this->sendError('Failed to log out, please try again.' . $e->getMessage(), [], 400);
+        }
     }
 }
 
