@@ -26,3 +26,7 @@ Route::middleware('auth:api')->group(function () {
 
 Route::get('/tips-and-care', [TipsCareApiController::class, 'index']);
 Route::get('/breeds', [BreedsApiController::class, 'index']);
+
+
+Route::get('/terms-conditions', [TipsCareApiController::class, 'terms']);
+Route::get('/privacy-policy', [TipsCareApiController::class, 'policy']);

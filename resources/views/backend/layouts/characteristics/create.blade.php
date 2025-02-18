@@ -155,10 +155,10 @@
                             console.log(characteristics);
 
                             $.each(characteristics, function (name, data) {
-                                let title = data.title.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+                                let title = name.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+                                let content = (data && data.content) ? data.content : '';
+                                let image = (data && data.image) ? `{{ asset('${data.image}') }}` : '';
 
-                                let content = data.content || '';
-                                let image = data.image ? `{{ asset('${data.image}') }}` : '';
 
                                 // Generate column HTML
                                 let columnHtml = `

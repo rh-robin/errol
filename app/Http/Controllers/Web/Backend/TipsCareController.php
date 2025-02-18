@@ -19,13 +19,13 @@ class TipsCareController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('image', function ($data) {
-                    $url = $data->image ? asset($data->image) : asset('backend/images/image-not.png');
+                    $url = $data->image ? asset($data->image) : asset('backend/assets/images/image-not.png');
                     return '<img src="' . $url . '" alt="image" class="img-fluid" style="height:50px; width:50px">';
                 })
                 ->addColumn('content', function ($data) {
-                    // Strip HTML tags and truncate the content
+                    // Strip HTML tags and truncate the content to 100 characters
                     $content = strip_tags($data->content);
-                    return $content;
+                    return strlen($content) > 100 ? substr($content, 0, 100) . '...' : $content;
                 })
                 ->addColumn('action', function ($data) {
                     return '<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
@@ -159,6 +159,10 @@ class TipsCareController extends Controller
             return response()->json(['errors' => true, 'message' => 'Data failed to delete']);
         }
     }
+
+
+
+
 
 
 }

@@ -15,4 +15,13 @@ class TipsCareApiController extends Controller
         $message = '';
         return $this->sendResponse($data, $message, '', 200);
     }
+
+    public function terms(){
+        return view('backend.layouts.terms_and_conditions');
+    }
+
+    public function policy(){
+        return view('backend.layouts.privacy_policy');
+    }
+
 }

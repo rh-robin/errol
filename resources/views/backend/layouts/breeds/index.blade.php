@@ -205,11 +205,12 @@
                     success: (response) => {
                         $('#data-table').DataTable().ajax.reload();
                         if (response.success === true) {
-                            Swal.fire({
+                            console.log(response.message);
+                            /*Swal.fire({
                                 title: "Deleted!",
                                 text: response.message,
                                 icon: "success"
-                            });
+                            });*/
                         } else if (response.errors === true) {
                             console.log(response.errors[0]);
                             Swal.fire({

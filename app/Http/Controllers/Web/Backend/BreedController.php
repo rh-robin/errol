@@ -156,10 +156,21 @@ class BreedController extends Controller
         try {
             // 🔍 Find the existing record
             $breed = Breed::findOrFail($id);
+            $characteristics = $breed->characteristics;
 
             // 🗑️ Delete the associated image if it exists
             if ($breed->image && file_exists(public_path($breed->image))) {
                 Helper::fileDelete($breed->image);
+            }
+
+            // Delete characteristics and their images
+            if ($characteristics->count() > 0) {
+                foreach ($characteristics as $characteristic) {
+                    if ($characteristic->image && file_exists(public_path($characteristic->image))) {
+                        Helper::fileDelete($characteristic->image);
+                    }
+                    $characteristic->delete();
+                }
             }
 
             // ❌ Delete the record from the database
