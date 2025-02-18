@@ -12,6 +12,7 @@ class TipsCare extends Model
     // Mass assignable attributes
     protected $fillable = [
         'title',
+        'sub_title',
         'image',
         'content',
     ];

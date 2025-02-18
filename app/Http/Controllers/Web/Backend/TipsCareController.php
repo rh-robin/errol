@@ -54,6 +54,7 @@ class TipsCareController extends Controller
         // ✅ Validate the incoming request
         $request->validate([
             'title'   => 'required|string|max:255',
+            'sub_title'   => 'required|string',
             'image'   => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg',
             'content' => 'required|string',
         ]);
@@ -61,6 +62,7 @@ class TipsCareController extends Controller
         // 🗂️ Prepare data for insertion
         $data = [
             'title'   => $request->title,
+            'sub_title'   => $request->sub_title,
             'content' => $request->content,
         ];
 
@@ -96,6 +98,7 @@ class TipsCareController extends Controller
         // ✅ Validate the incoming request
         $request->validate([
             'title'   => 'required|string|max:255',
+            'sub_title'   => 'required|string',
             'image'   => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg',
             'content' => 'required|string',
         ]);
@@ -106,6 +109,7 @@ class TipsCareController extends Controller
         // 🗂️ Prepare data for update
         $data = [
             'title'   => $request->title,
+            'sub_title'   => $request->sub_title,
             'content' => $request->content,
         ];
 

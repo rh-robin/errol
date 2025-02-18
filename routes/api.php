@@ -16,10 +16,11 @@ Route::post('/socialLogin', [SocialLoginController::class, 'SocialLogin']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [SocialLoginController::class, 'logout']);
+    Route::post('/pet/store', [PetApiController::class, 'store']);
+    Route::post('/pet/update/{id}', [PetApiController::class, 'update']);
 });
 
-Route::post('/pet/store', [PetApiController::class, 'store']);
-Route::post('/pet/update/{id}', [PetApiController::class, 'update']);
+
 
 
 

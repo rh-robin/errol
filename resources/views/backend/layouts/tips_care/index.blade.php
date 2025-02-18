@@ -50,6 +50,7 @@
                                         <tr>
                                             <th>SI</th>
                                             <th>Title</th>
+                                            <th>Sub-title</th>
                                             <th>Content</th>
                                             <th>Image</th>
                                             <th>Actions</th>
@@ -132,6 +133,13 @@
                         {
                             data: 'title',
                             name: 'title',
+                            orderable: true,
+                            searchable: true
+                        },
+
+                        {
+                            data: 'sub_title',
+                            name: 'sub_title',
                             orderable: true,
                             searchable: true
                         },

@@ -6,6 +6,7 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Pet;
 use App\Traits\ResponseTrait;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +20,6 @@ class PetApiController extends Controller
     {
         // Validate request data
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
             'name' => 'required|string|max:255',
             'category' => 'required|in:dog,cat',
             'd_o_b' => 'required|date',
@@ -50,7 +50,7 @@ class PetApiController extends Controller
 
             // Create pet record
             $pet = Pet::create([
-                'user_id' => $request->user_id,
+                'user_id' => Auth::user()->id,
                 'name' => $request->name,
                 'category' => $request->category,
                 'breed_id' => $request->breed_id,
@@ -80,7 +80,6 @@ class PetApiController extends Controller
     {
         // Validate request data
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
             'name' => 'required|string|max:255',
             'category' => 'required|in:dog,cat',
             'd_o_b' => 'required|date',
@@ -115,7 +114,6 @@ class PetApiController extends Controller
 
             // Update pet record
             $pet->update([
-                'user_id' => $request->user_id,
                 'name' => $request->name,
                 'category' => $request->category,
                 'breed_id' => $request->breed_id,
