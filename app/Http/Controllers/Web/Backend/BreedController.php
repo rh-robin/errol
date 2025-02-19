@@ -26,7 +26,7 @@ class BreedController extends Controller
                 ->addColumn('content', function ($data) {
                     // Strip HTML tags and truncate the content
                     $content = strip_tags($data->content);
-                    return $content;
+                    return strlen($content) > 100 ? substr($content, 0, 100) . '...' : $content;
                 })
                 ->addColumn('type', function ($data) {
                     // Strip HTML tags and truncate the content
@@ -61,6 +61,7 @@ class BreedController extends Controller
         // ✅ Validate the incoming request
         $request->validate([
             'title'   => 'required|string|max:255',
+            'sub_title'   => 'required|string',
             'image'   => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg',
             'content' => 'required|string',
             'type'    => 'required|in:dog,cat',
@@ -69,6 +70,7 @@ class BreedController extends Controller
         // 🗂️ Prepare data for insertion
         $data = [
             'title'   => $request->title,
+            'sub_title'   => $request->sub_title,
             'content' => $request->content,
             'type'    => $request->type,
         ];
@@ -107,6 +109,7 @@ class BreedController extends Controller
         // ✅ Validate the incoming request
         $request->validate([
             'title'   => 'required|string|max:255',
+            'sub_title'   => 'required|string',
             'image'   => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg',
             'content' => 'required|string',
             'type'    => 'required|in:dog,cat',
@@ -118,6 +121,7 @@ class BreedController extends Controller
         // 🗂️ Prepare data for update
         $data = [
             'title'   => $request->title,
+            'sub_title'   => $request->sub_title,
             'content' => $request->content,
             'type'    => $request->type,
         ];

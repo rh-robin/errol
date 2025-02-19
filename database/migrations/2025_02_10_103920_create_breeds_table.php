@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('breeds', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('sub_title');
             $table->text('content')->nullable();
             $table->string('image')->nullable();
             $table->enum('type', ['dog', 'cat']);

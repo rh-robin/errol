@@ -61,6 +61,16 @@
                                             <input type="text" class="form-control" id="title" name="title" placeholder="Enter title" value="{{ old('title') ?? ($data->title ? $data->title : '') }}">
                                         </div>
 
+
+                                        <!-- Sub-title Field -->
+                                        <div class="mb-3">
+                                            <label for="sub_title" class="form-label">Sub Title</label>
+                                            <textarea class="form-control @error('sub_title') is-invalid @enderror" id="sub_title" name="sub_title" rows="3">{{ old('sub_title') ?? ($data->sub_title ? $data->sub_title : '') }}</textarea>
+                                            @error('sub_title')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
                                         <!-- Image Upload Field -->
                                         <div class="mb-3">
                                             <label for="image" class="form-label">Image</label>
