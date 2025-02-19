@@ -11,7 +11,13 @@ class BreedsApiController extends Controller
 {
     use ResponseTrait;
     public function index(){
-        $data = Breed::with('characteristics')->get();
+        $data = Breed::with('characteristics')->get()->map(function ($breed) {
+            $breed->characteristics->transform(function ($characteristic) {
+                $characteristic->title = ucwords(str_replace('_', ' ', $characteristic->title));
+                return $characteristic;
+            });
+            return $breed;
+        });
         $message = '';
         return $this->sendResponse($data, $message, '', 200);
     }
