@@ -2,6 +2,7 @@
 
 
 use App\Http\Controllers\API\BreedsApiController;
+use App\Http\Controllers\API\FoodApiController;
 use App\Http\Controllers\API\PetApiController;
 use App\Http\Controllers\API\SocialLoginController;
 use App\Http\Controllers\API\TipsCareApiController;
@@ -19,6 +20,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/pet/store', [PetApiController::class, 'store']);
     Route::post('/pet/update/{id}', [PetApiController::class, 'update']);
 });
+
+Route::post('analyze-food', [FoodApiController::class, 'analyzeFood']);
 
 
 
