@@ -137,4 +137,11 @@ class PetApiController extends Controller
         }
     }
 
+
+    public function myPet(){
+        $user = Auth::user();
+        $pets = Pet::where('user_id',$user->id)->get();
+        return $this->sendResponse($pets, 'Pet list', '', 200);
+    }
+
 }

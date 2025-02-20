@@ -52,6 +52,10 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
+    public function pets(){
+        return $this->hasMany(Pet::class);
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();

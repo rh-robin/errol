@@ -19,6 +19,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [SocialLoginController::class, 'logout']);
     Route::post('/pet/store', [PetApiController::class, 'store']);
     Route::post('/pet/update/{id}', [PetApiController::class, 'update']);
+    Route::get('/my-pet', [PetApiController::class, 'myPet']);
 });
 
 Route::post('analyze-food', [FoodApiController::class, 'analyzeFood']);
