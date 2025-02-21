@@ -17,7 +17,7 @@ Route::post('/socialLogin', [SocialLoginController::class, 'SocialLogin']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [SocialLoginController::class, 'logout']);
-    Route::post('/profile', [SocialLoginController::class, 'getProfile']);
+    Route::get('/profile', [SocialLoginController::class, 'getProfile']);
 
     /* ==========  pet api ==========*/
     Route::post('/pet/store', [PetApiController::class, 'store']);
