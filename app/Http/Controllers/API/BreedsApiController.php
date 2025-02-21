@@ -21,4 +21,28 @@ class BreedsApiController extends Controller
         $message = '';
         return $this->sendResponse($data, $message, '', 200);
     }
+
+    public function catBreeds(){
+        $data = Breed::where('type', 'cat')->select('id', 'title', 'type')->get();
+
+        if($data->count() == 0){
+            $message = 'No data found';
+        }else{
+            $message = 'All cat breeds';
+        }
+
+        return $this->sendResponse($data, $message, '', 200);
+    }
+
+    public function dogBreeds(){
+        $data = Breed::where('type', 'dog')->select('id', 'title', 'type')->get();
+
+        if($data->count() == 0){
+            $message = 'No data found';
+        }else{
+            $message = 'All dog breeds';
+        }
+
+        return $this->sendResponse($data, $message, '', 200);
+    }
 }

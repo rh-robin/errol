@@ -83,6 +83,12 @@ class SocialLoginController extends Controller
             return $this->sendError('Failed to log out, please try again.' . $e->getMessage(), [], 400);
         }
     }
+
+
+    public function getProfile(){
+        $user = Auth::user();
+        return $this->sendResponse($user, 'User profile', '', 200);
+    }
 }
 
 

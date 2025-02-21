@@ -17,6 +17,9 @@ Route::post('/socialLogin', [SocialLoginController::class, 'SocialLogin']);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [SocialLoginController::class, 'logout']);
+    Route::post('/profile', [SocialLoginController::class, 'getProfile']);
+
+    /* ==========  pet api ==========*/
     Route::post('/pet/store', [PetApiController::class, 'store']);
     Route::post('/pet/update/{id}', [PetApiController::class, 'update']);
     Route::get('/my-pet', [PetApiController::class, 'myPet']);
@@ -30,6 +33,8 @@ Route::post('analyze-food', [FoodApiController::class, 'analyzeFood']);
 
 Route::get('/tips-and-care', [TipsCareApiController::class, 'index']);
 Route::get('/breeds', [BreedsApiController::class, 'index']);
+Route::get('/fetch-breeds/cat', [BreedsApiController::class, 'catBreeds']);
+Route::get('/fetch-breeds/dog', [BreedsApiController::class, 'dogBreeds']);
 
 
 Route::get('/terms-conditions', [TipsCareApiController::class, 'terms']);
