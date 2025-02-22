@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Models\FoodInfo;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -18,6 +19,7 @@ class FoodApiController extends Controller
         // Validate the request
         $validator = Validator::make($request->all(),[
             'image' => 'required|image|mimes:jpg,jpeg,png,gif',
+            //'pet_id' => 'required|integer|min:1'
         ]);
 
         if ($validator->fails()) {
@@ -46,6 +48,7 @@ class FoodApiController extends Controller
                     ['type' => 'text', 'text' => 'Analyze this food image and return the following details in JSON format under the variable "EstimatedNutritionalInformation":'],
                     ['type' => 'text', 'text' => '{
                     "isFood": "yes or no",
+                    "name": "just name of the food without any pets or other words",
                     "weight": "estimated weight of the food in grams",
                     "calorie": "estimated calorie content in kcal",
                     "protein": "estimated protein content in grams",
@@ -67,7 +70,22 @@ class FoodApiController extends Controller
 
         // Check if the data is valid
         if (!isset($cleanedNutritionInfo['EstimatedNutritionalInformation'])) {
-            return $this->sendError('Invalid response format from OpenAI', [], 500);
+            return $this->sendError('Invalid response format from AI', [], 500);
+        }else{
+            /*$foodInfo = new FoodInfo();
+            $foodInfo->name = $cleanedNutritionInfo['EstimatedNutritionalInformation']['name'];
+            $foodInfo->weight = $cleanedNutritionInfo['EstimatedNutritionalInformation']['weight'];
+            $foodInfo->calorie = $cleanedNutritionInfo['EstimatedNutritionalInformation']['calorie'];
+            $foodInfo->protein = $cleanedNutritionInfo['EstimatedNutritionalInformation']['protein'];
+            $foodInfo->carbs = $cleanedNutritionInfo['EstimatedNutritionalInformation']['carbs'];
+            $foodInfo->fat = $cleanedNutritionInfo['EstimatedNutritionalInformation']['fat'];
+            $file = 'image';
+            if ($request->hasFile($file)) {
+                // Upload the new file
+                $randomString = Str::random(10);
+                $foodInfo->image  = Helper::fileUpload($request->file($file), 'food', $randomString);
+            }
+            $foodInfo->save();*/
         }
         $message = 'food uploaded to chatgpt successfully!';
         return $this->sendResponse($cleanedNutritionInfo['EstimatedNutritionalInformation'], $message, '', 201);

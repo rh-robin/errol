@@ -22,11 +22,11 @@ class PetApiController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'category' => 'required|in:dog,cat',
+            'breed_id' => 'required|exists:breeds,id',
             'd_o_b' => 'required|date',
             'gender' => 'required|in:male,female',
-            //'age' => 'required|integer|min:0',
             'weight' => 'nullable|numeric|min:0',
-            'weight_goal' => 'nullable|numeric|min:0',
+            'weight_goal' => 'nullable',
             'height' => 'nullable|numeric|min:0',
             'additional_note' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png',
