@@ -10,7 +10,7 @@ use App\Http\Controllers\Web\Backend\BreedController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/test', [\App\Http\Controllers\API\TestContrtoller::class, 'index']);
+
 
 
 Route::post('/socialLogin', [SocialLoginController::class, 'SocialLogin']);
