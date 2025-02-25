@@ -143,10 +143,34 @@ class PetApiController extends Controller
     }
 
 
-    public function myPet(){
+    public function myPet()
+    {
         $user = Auth::user();
-        $pets = Pet::where('user_id',$user->id)->get();
+
+        $pets = Pet::where('user_id', $user->id)
+            ->with('breed:id,title') // Load breed with only id and title
+            ->get()
+            ->map(function ($pet) {
+                return [
+                    'id' => $pet->id,
+                    'user_id' => $pet->user_id,
+                    'breed' => $pet->breed ? $pet->breed->title : null, // Get breed title
+                    'name' => $pet->name,
+                    'category' => $pet->category,
+                    'd_o_b' => \Carbon\Carbon::parse($pet->d_o_b)->format('d/m/Y'), // Convert d_o_b format
+                    'gender' => $pet->gender,
+                    'weight' => $pet->weight,
+                    'weight_goal' => $pet->weight_goal,
+                    'height' => $pet->height,
+                    'additional_note' => $pet->additional_note,
+                    'image' => $pet->image,
+                    'created_at' => $pet->created_at,
+                    'updated_at' => $pet->updated_at,
+                ];
+            });
+
         return $this->sendResponse($pets, 'Pet list', '', 200);
     }
+
 
 }
