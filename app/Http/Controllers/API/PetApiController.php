@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pet;
 use App\Traits\ResponseTrait;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -23,7 +24,7 @@ class PetApiController extends Controller
             'name' => 'required|string|max:255',
             'category' => 'required|in:dog,cat',
             'breed_id' => 'required|exists:breeds,id',
-            'd_o_b' => 'required|date',
+            'd_o_b' => 'required|date_format:d/m/Y',
             'gender' => 'required|in:male,female',
             'weight' => 'nullable|numeric|min:0',
             'weight_goal' => 'nullable',
@@ -36,6 +37,8 @@ class PetApiController extends Controller
             //return response()->json(['errors' => $validator->errors()], 422);
             return $this->sendError('Validation failed', $validator->errors()->toArray(), 422);
         }
+
+        $dob = Carbon::createFromFormat('d/m/Y', $request->d_o_b)->format('Y-m-d');
 
         DB::beginTransaction();
         try {
@@ -54,7 +57,7 @@ class PetApiController extends Controller
                 'name' => $request->name,
                 'category' => $request->category,
                 'breed_id' => $request->breed_id,
-                'd_o_b' => $request->d_o_b,
+                'd_o_b' => $dob,
                 'gender' => $request->gender,
                 //'age' => $request->age,
                 'weight' => $request->weight,
@@ -82,7 +85,7 @@ class PetApiController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'category' => 'required|in:dog,cat',
-            'd_o_b' => 'required|date',
+            'd_o_b' => 'required|date_format:d/m/Y',
             'gender' => 'required|in:male,female',
             'weight' => 'nullable|numeric|min:0',
             'weight_goal' => 'nullable|numeric|min:0',
@@ -94,6 +97,8 @@ class PetApiController extends Controller
         if ($validator->fails()) {
             return $this->sendError('Validation failed', $validator->errors()->toArray(), 422);
         }
+
+        $dob = Carbon::createFromFormat('d/m/Y', $request->d_o_b)->format('Y-m-d');
 
         DB::beginTransaction();
         try {
@@ -117,7 +122,7 @@ class PetApiController extends Controller
                 'name' => $request->name,
                 'category' => $request->category,
                 'breed_id' => $request->breed_id,
-                'd_o_b' => $request->d_o_b,
+                'd_o_b' => $dob,
                 'gender' => $request->gender,
                 'weight' => $request->weight,
                 'weight_goal' => $request->weight_goal,
