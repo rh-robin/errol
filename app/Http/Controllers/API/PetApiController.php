@@ -154,7 +154,8 @@ class PetApiController extends Controller
                 return [
                     'id' => $pet->id,
                     'user_id' => $pet->user_id,
-                    'breed' => $pet->breed ? $pet->breed->title : null, // Get breed title
+                    'breed_id' => $pet->breed_id,
+                    'breed_title' => $pet->breed ? $pet->breed->title : null,
                     'name' => $pet->name,
                     'category' => $pet->category,
                     'd_o_b' => \Carbon\Carbon::parse($pet->d_o_b)->format('d/m/Y'), // Convert d_o_b format
