@@ -51,6 +51,7 @@ class FoodApiController extends Controller
                     "name": "just name of the food without any pets or other words",
                     "weight": "estimated weight of the food in grams",
                     "calorie": "estimated calorie content in kcal",
+                    "exercise_time": "estimated exercise_time in minutes to burn the calories",
                     "protein": "estimated protein content in grams",
                     "carbs": "estimated carbohydrate content in grams",
                     "fat": "estimated fat content in grams"
