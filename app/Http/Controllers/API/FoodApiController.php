@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\FoodInfo;
+use App\Models\Pet;
 use App\Traits\ResponseTrait;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -19,14 +21,14 @@ class FoodApiController extends Controller
         // Validate the request
         $validator = Validator::make($request->all(),[
             'image' => 'required|image|mimes:jpg,jpeg,png,gif',
-            //'pet_id' => 'required|integer|min:1'
+            'pet_id' => 'required|integer|exists:pets,id'
         ]);
 
         if ($validator->fails()) {
-            //return response()->json(['errors' => $validator->errors()], 422);
             return $this->sendError('Validation failed', $validator->errors()->toArray(), 422);
         }
 
+        //$pet = Pet::findOrFail($request->pet_id);
 
 
         // Get image file
@@ -73,10 +75,12 @@ class FoodApiController extends Controller
         if (!isset($cleanedNutritionInfo['EstimatedNutritionalInformation'])) {
             return $this->sendError('Invalid response format from AI', [], 500);
         }else{
-            /*$foodInfo = new FoodInfo();
+            $foodInfo = new FoodInfo();
+            $foodInfo->pet_id = $request->pet_id;
             $foodInfo->name = $cleanedNutritionInfo['EstimatedNutritionalInformation']['name'];
             $foodInfo->weight = $cleanedNutritionInfo['EstimatedNutritionalInformation']['weight'];
             $foodInfo->calorie = $cleanedNutritionInfo['EstimatedNutritionalInformation']['calorie'];
+            $foodInfo->exercise_time = $cleanedNutritionInfo['EstimatedNutritionalInformation']['exercise_time'];
             $foodInfo->protein = $cleanedNutritionInfo['EstimatedNutritionalInformation']['protein'];
             $foodInfo->carbs = $cleanedNutritionInfo['EstimatedNutritionalInformation']['carbs'];
             $foodInfo->fat = $cleanedNutritionInfo['EstimatedNutritionalInformation']['fat'];
@@ -86,11 +90,33 @@ class FoodApiController extends Controller
                 $randomString = Str::random(10);
                 $foodInfo->image  = Helper::fileUpload($request->file($file), 'food', $randomString);
             }
-            $foodInfo->save();*/
+            $foodInfo->save();
         }
         $message = 'food uploaded to chatgpt successfully!';
         return $this->sendResponse($cleanedNutritionInfo['EstimatedNutritionalInformation'], $message, '', 201);
     }
+
+
+    public function getFoodInfoByDate(Request $request){
+        // Validate the request
+        $validator = Validator::make($request->all(),[
+            'date' => 'required|date_format:d/m/Y',
+            'pet_id' => 'required|integer|exists:pets,id'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation failed', $validator->errors()->toArray(), 422);
+        }
+        $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
+
+        $data = FoodInfo::where('created_at', $date)->where('pet_id', $request->pet_id)->get();
+
+        $message = 'food date for date: '.$date.'.';
+        return $this->sendResponse($data, $message, '', 200);
+    }
+
+
+
 
 
 }

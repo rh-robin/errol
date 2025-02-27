@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('image');
             $table->decimal('calorie', 8, 2);
+            $table->decimal('exercise_time', 8, 2)->nullable();
             $table->decimal('protein', 8, 2);
             $table->decimal('carbs', 8, 2);
             $table->decimal('fat', 8, 2);

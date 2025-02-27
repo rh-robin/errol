@@ -25,7 +25,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/my-pet', [PetApiController::class, 'myPet']);
 });
 
-Route::post('analyze-food', [FoodApiController::class, 'analyzeFood']);
+Route::post('/analyze-food', [FoodApiController::class, 'analyzeFood']);
+Route::post('/food-info/date', [FoodApiController::class, 'getFoodInfoByDate']);
 
 
 
