@@ -109,9 +109,10 @@ class FoodApiController extends Controller
         }
         $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
 
-        $data = FoodInfo::where('created_at', $date)->where('pet_id', $request->pet_id)->get();
+        $data = FoodInfo::where('pet_id', $request->pet_id)->whereDate('created_at', $date)->get();
 
-        $message = 'food date for date: '.$date.'.';
+
+        $message = 'food data for date: '.$date.'.';
         return $this->sendResponse($data, $message, '', 200);
     }
 
