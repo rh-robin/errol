@@ -29,6 +29,9 @@ Route::post('/analyze-food', [FoodApiController::class, 'analyzeFood']);
 Route::post('/food-info/date', [FoodApiController::class, 'getFoodInfoByDate']);
 
 
+Route::post('/analyze-food/claude', [FoodApiController::class, 'analyzeFoodClaude']);
+
+
 
 
 

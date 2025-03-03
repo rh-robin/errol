@@ -47,8 +47,12 @@ return [
         'redirect' => env('TWITTER_REDIRECT_URI'),
     ],
 
-    'openai' => [
+    'openAi' => [
         'api_key' => env('OPENAI_API_KEY'),
+    ],
+
+    'claudeAi' => [
+        'api_key' => env('ANTHROPIC_API_KEY'),
     ],
 
 ];

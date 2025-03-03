@@ -38,7 +38,7 @@ class FoodApiController extends Controller
         $imageBase64 = base64_encode(file_get_contents($image->getRealPath()));
 
         // Send a request to the OpenAI API
-        $apiKey = config('services.openai.api_key');
+        $apiKey = config('services.openAi.api_key');
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $apiKey,
             'Content-Type' => 'application/json',
@@ -75,6 +75,9 @@ class FoodApiController extends Controller
         if (!isset($cleanedNutritionInfo['EstimatedNutritionalInformation'])) {
             return $this->sendError('Invalid response format from AI', [], 500);
         }else{
+            if($cleanedNutritionInfo['EstimatedNutritionalInformation']['isFood'] == 'no'){
+                return $this->sendError('This is not a food', [], 500);
+            }
             $foodInfo = new FoodInfo();
             $foodInfo->pet_id = $request->pet_id;
             $foodInfo->name = $cleanedNutritionInfo['EstimatedNutritionalInformation']['name'];
@@ -130,6 +133,97 @@ class FoodApiController extends Controller
         return $this->sendResponse($response, $message, '', 200);
     }
 
+
+
+
+    public function analyzeFoodClaude(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(),[
+            'image' => 'required|image|mimes:jpg,jpeg,png,gif',
+            //'pet_id' => 'required|integer|exists:pets,id'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation failed', $validator->errors()->toArray(), 422);
+        }
+
+        // Get image file
+        $image = $request->file('image');
+
+        // Convert image to base64
+        $imageBase64 = base64_encode(file_get_contents($image->getRealPath()));
+
+        // Get the correct MIME type for the image
+        $extension = $image->getClientOriginalExtension();
+        $mimeType = [
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif'
+        ][$extension] ?? $image->getMimeType();
+
+        // Send a request to the Claude API
+        $apiKey = config('services.claudeAi.api_key');
+
+        $response = Http::withHeaders([
+            'x-api-key' => $apiKey,
+            'anthropic-version' => '2023-06-01',
+            'content-type' => 'application/json',
+        ])->post('https://api.anthropic.com/v1/messages', [
+            'model' => 'claude-3-7-sonnet-20250219', // Using Claude 3.7 Sonnet as it supports multimodal features
+            'max_tokens' => 300,
+            'messages' => [
+                [
+                    'role' => 'user',
+                    'content' => [
+                        [
+                            'type' => 'text',
+                            'text' => "Analyze this food image for pet or human and return the following details in JSON format under the variable \"EstimatedNutritionalInformation\" and no extra text. Put null if the image does not contain food.:
+                    {
+                        \"isFood\": \"yes or no\",
+                        \"name\": \"just name of the food without any pets or other words\",
+                        \"weight\": \"estimated weight of the food in grams\",
+                        \"calorie\": \"estimated calorie content in kcal\",
+                        \"exercise_time\": \"estimated exercise_time in minutes to burn the calories\",
+                        \"protein\": \"estimated protein content in grams\",
+                        \"carbs\": \"estimated carbohydrate content in grams\",
+                        \"fat\": \"estimated fat content in grams\"
+                    }"
+                        ],
+                        [
+                            'type' => 'image',
+                            'source' => [
+                                'type' => 'base64',
+                                'media_type' => $mimeType,
+                                'data' => $imageBase64
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+
+        // Parse the Claude API response
+        $responseData = $response;
+
+        $message = 'Food analyzed by Claude AI successfully!';
+        $nutritionInfo = [];
+
+        if (!empty($responseData['content'][0]['text'])) {
+            // Extract the JSON part from the text
+            preg_match('/```json\n(.*?)\n```/s', $responseData['content'][0]['text'], $matches);
+
+            if (!empty($matches[1])) {
+                $nutritionInfo = json_decode($matches[1], true);
+            }
+        }
+
+
+        //return response()->json($nutritionInfo['EstimatedNutritionalInformation'], 200);
+        return $this->sendResponse($nutritionInfo['EstimatedNutritionalInformation'], $message, '', 201);
+
+    }
 
 
 
