@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Pet;
+use App\Models\Weight;
 use App\Traits\ResponseTrait;
 use Auth;
 use Carbon\Carbon;
@@ -61,11 +62,16 @@ class PetApiController extends Controller
                 'gender' => $request->gender,
                 //'age' => $request->age,
                 'weight' => $request->weight,
-                'weight_goal' => $request->weight_goal,
+                //'weight_goal' => $request->weight_goal,
                 'height' => $request->height,
                 'additional_note' => $request->additional_note,
                 'image' => $imagePath,
             ]);
+
+            $weight = new Weight();
+            $weight->pet_id = $pet->id;
+            $weight->current_weight = $request->current_weight;
+            $weight->save();
 
             DB::commit();
 

@@ -100,42 +100,8 @@ class FoodApiController extends Controller
     }
 
 
-    public function getFoodInfoByDate(Request $request){
-        // Validate the request
-        $validator = Validator::make($request->all(),[
-            'date' => 'required|date_format:d/m/Y',
-            'pet_id' => 'required|integer|exists:pets,id'
-        ]);
 
-        if ($validator->fails()) {
-            return $this->sendError('Validation failed', $validator->errors()->toArray(), 422);
-        }
-        $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
-
-        $data = FoodInfo::where('pet_id', $request->pet_id)->whereDate('created_at', $date)->get();
-
-        // Calculate total values
-        $total_calorie = $data->sum('calorie');
-        $total_protein = $data->sum('protein');
-        $total_carbs = $data->sum('carbs');
-        $total_fat = $data->sum('fat');
-
-        // Add totals to response
-        $response = [
-            'food_data' => $data,
-            'total_calorie' => $total_calorie,
-            'total_protein' => $total_protein,
-            'total_carbs' => $total_carbs,
-            'total_fat' => $total_fat,
-        ];
-
-        $message = 'food data for date: '.$date.'.';
-        return $this->sendResponse($response, $message, '', 200);
-    }
-
-
-
-
+    /* ============================== CLAUDE AI ======================= */
     public function analyzeFoodClaude(Request $request)
     {
         // Validate the request
@@ -205,23 +171,23 @@ class FoodApiController extends Controller
         ]);
 
         // Parse the Claude API response
-        $responseData = $response;
+        $responseData = $response->json();
 
         $message = 'Food analyzed by Claude AI successfully!';
         $nutritionInfo = [];
 
-        if (!empty($responseData['content'][0]['text'])) {
+        /*if (!empty($responseData['content'][0]['text'])) {
             // Extract the JSON part from the text
             preg_match('/```json\n(.*?)\n```/s', $responseData['content'][0]['text'], $matches);
 
             if (!empty($matches[1])) {
                 $nutritionInfo = json_decode($matches[1], true);
             }
-        }
+        }*/
 
 
         //return response()->json($nutritionInfo['EstimatedNutritionalInformation'], 200);
-        return $this->sendResponse($nutritionInfo['EstimatedNutritionalInformation'], $message, '', 201);
+        return $this->sendResponse($responseData, $message, '', 201);
 
     }
 

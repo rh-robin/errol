@@ -6,6 +6,7 @@ use App\Http\Controllers\API\FoodApiController;
 use App\Http\Controllers\API\PetApiController;
 use App\Http\Controllers\API\SocialLoginController;
 use App\Http\Controllers\API\TipsCareApiController;
+use App\Http\Controllers\API\WeightApiController;
 use App\Http\Controllers\Web\Backend\BreedController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,13 +26,17 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/my-pet', [PetApiController::class, 'myPet']);
 });
 
+
+/*================= food api ==================*/
 Route::post('/analyze-food', [FoodApiController::class, 'analyzeFood']);
 Route::post('/food-info/date', [FoodApiController::class, 'getFoodInfoByDate']);
-
-
 Route::post('/analyze-food/claude', [FoodApiController::class, 'analyzeFoodClaude']);
 
 
+
+/* ====================== weight api ===================*/
+Route::post('/weight/store', [WeightApiController::class, 'storeWeight']);
+Route::post('/weight/{pet_id}', [WeightApiController::class, 'getWeight']);
 
 
 
