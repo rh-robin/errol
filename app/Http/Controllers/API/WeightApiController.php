@@ -50,13 +50,39 @@ class WeightApiController extends Controller
 
             return $this->sendResponse($weight, $message, '', 201);
         }catch (\Exception $exception){
-            return $this->sendError($exception->getMessage(), $exception->getCode());
+            return $this->sendError($exception->getMessage(), [], $exception->getCode());
         }
 
     }
 
     public function getWeight($pet_id){
-        $weight = Weight::where('pet_id', $pet_id)->get();
+        $weights = Weight::where('pet_id', $pet_id)
+            ->orderBy('updated_at', 'asc')
+            ->get(['current_weight', 'updated_at', 'weight_goal']);
 
+
+        $weightsArray = $weights->toArray();
+
+        // Transform the data to rename and format `updated_at`
+        $weightsArray = $weights->map(function ($weight) {
+            return [
+                'current_weight' => $weight->current_weight,
+                'date' => $weight->updated_at->toDateString(), // Converts to YYYY-MM-DD format
+            ];
+        })->toArray();
+        //dd($weights->last());
+
+        // Get the last weight_goal value if there is at least one record
+        $weightGoal = $weights->last()->weight_goal ?? null;
+
+        // Prepare the final response array
+        $response = [
+            'weights' => $weightsArray, // Array of current_weight and updated_at
+            'weight_goal' => $weightGoal // Last weight goal value
+        ];
+
+
+        $message = 'Weight data saved successfully.';
+        return $this->sendResponse($response, $message, '', 201);
     }
 }

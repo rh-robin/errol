@@ -36,7 +36,16 @@ Route::post('/analyze-food/claude', [FoodApiController::class, 'analyzeFoodClaud
 
 /* ====================== weight api ===================*/
 Route::post('/weight/store', [WeightApiController::class, 'storeWeight']);
-Route::post('/weight/{pet_id}', [WeightApiController::class, 'getWeight']);
+Route::get('/weight/{pet_id}', [WeightApiController::class, 'getWeight']);
+
+
+
+/* ======================== stripe =================*/
+/*Route::post('/create-customer', [StripeController::class, 'createCustomer']);
+Route::post('/subscribe', [StripeController::class, 'subscribe']);
+Route::post('/payment-intent', [StripeController::class, 'createPaymentIntent']);
+Route::post('/webhook', [StripeController::class, 'handleWebhook']);*/
+
 
 
 
