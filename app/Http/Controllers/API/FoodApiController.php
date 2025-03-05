@@ -211,6 +211,7 @@ class FoodApiController extends Controller
         $total_protein = $data->sum('protein');
         $total_carbs = $data->sum('carbs');
         $total_fat = $data->sum('fat');
+        $total_exercise_time = $data->sum('exercise_time');
 
         // Add totals to response
         $response = [
@@ -219,6 +220,7 @@ class FoodApiController extends Controller
             'total_protein' => $total_protein,
             'total_carbs' => $total_carbs,
             'total_fat' => $total_fat,
+            'total_exercise_time' => $total_exercise_time,
         ];
 
         $message = 'food data for date: '.$date.'.';
