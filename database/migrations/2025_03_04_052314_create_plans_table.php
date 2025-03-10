@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
             $table->string('uuid')->unique();
-            $table->string('stripe_plan_id',200)->nullable();
+            $table->string('stripe_price_id',200)->nullable();
             $table->string('plan_name',200);
             $table->double('plan_price',10.2)->nullable();
-            $table->tinyInteger('plan_type')->comment('1 for monthly, 2 yearly');
+            $table->tinyInteger('plan_type')->comment('1 for monthly, 2 yearly')->default(1);
             $table->tinyInteger('status')->comment('0 for inactive, 1 for active');
             $table->timestamps();
         });
