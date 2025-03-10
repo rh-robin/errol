@@ -1,12 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\API\SocialLoginController;
-use App\Http\Controllers\API\TipsCareApiController;
-use App\Http\Controllers\Web\Backend\AdminController;
+use Illuminate\Support\Facades\Route;
 use Laravel\Cashier\Http\Controllers\WebHookController;
-use App\Http\Controllers\Web\Backend\TipsCareController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,13 +18,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-
-
-Route::post('stripe/webhook', [WebHookController::class, 'handleWebhook']);
-
+Route::any('stripe/webhook', [WebHookController::class, 'handleWebhook']);
 
 /*Route::get('social-login/{provider}', [SocialLoginController::class, 'RedirectToProvider'])->name('social.login');
 Route::get('social-login/callback/{provider}', [SocialLoginController::class, 'HandleProviderCallback']);*/
 
-require __DIR__.'/auth.php';
-require __DIR__.'/backend.php';
+require __DIR__ . '/auth.php';
+require __DIR__ . '/backend.php';
