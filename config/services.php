@@ -18,20 +18,20 @@ return [
         'token' => env('POSTMARK_TOKEN'),
     ],
 
-    'ses' => [
-        'key' => env('AWS_ACCESS_KEY_ID'),
+    'ses'      => [
+        'key'    => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'resend' => [
+    'resend'   => [
         'key' => env('RESEND_KEY'),
     ],
 
-    'slack' => [
+    'slack'    => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
-            'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
+            'channel'              => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
 
@@ -41,18 +41,37 @@ return [
         'redirect'      => env('GOOGLE_REDIRECT_URI'),
     ],
 
-    'twitter' => [
-        'client_id' => env('TWITTER_CLIENT_ID'),
+    'twitter'  => [
+        'client_id'     => env('TWITTER_CLIENT_ID'),
         'client_secret' => env('TWITTER_CLIENT_SECRET'),
-        'redirect' => env('TWITTER_REDIRECT_URI'),
+        'redirect'      => env('TWITTER_REDIRECT_URI'),
     ],
 
-    'openAi' => [
+    'openAi'   => [
         'api_key' => env('OPENAI_API_KEY'),
     ],
 
     'claudeAi' => [
         'api_key' => env('ANTHROPIC_API_KEY'),
+    ],
+    'stripe'   => [
+        'key'          => [
+            'public' => env('STRIPE_KEY'),
+            'secret' => env('STRIPE_SECRET'),
+        ],
+        'subscription' => [
+            'medium'  => [
+                'product_id' => env('STRIPE_PRODUCT_ID_MEDIUM'),
+                'price_id'   => env('STRIPE_PRICE_ID_MEDIUM'),
+            ],
+            'premium' => [
+                'product_id' => env('STRIPE_PRODUCT_ID_PREMIUM'),
+                'price_id'   => env('STRIPE_PRICE_ID_PREMIUM'),
+            ],
+        ],
+        'webhook'      => [
+            'key' => env('STRIPE_WEBHOOK_SECRET'),
+        ],
     ],
 
 ];

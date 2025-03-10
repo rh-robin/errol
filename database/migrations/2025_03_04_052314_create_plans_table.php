@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
             $table->string('uuid')->unique();
-            $table->string('stripe_price_id',200)->nullable();
-            $table->string('plan_name',200);
-            $table->double('plan_price',10.2)->nullable();
-            $table->tinyInteger('plan_type')->comment('1 for monthly, 2 yearly')->default(1);
-            $table->tinyInteger('status')->comment('0 for inactive, 1 for active');
+            $table->text('stripe_price_id',200)->nullable();
+            $table->text('stripe_product_id',200)->nullable();
+            $table->string('name',200);
+            $table->double('price',10.2)->nullable();
+            $table->enum('type',['medium','premium'])->nullable();  
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });
     }
