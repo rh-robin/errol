@@ -1,10 +1,9 @@
 <?php
-
 namespace Database\Seeders;
 
 use App\Models\Plan;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 
 class PlanSeeder extends Seeder
@@ -15,13 +14,32 @@ class PlanSeeder extends Seeder
     public function run(): void
     {
         $userPlans = [
-            ['uuid'=>Str::uuid()->toString(),'stripe_plan_id'=>'','plan_name'=>'Siler Monthly','plan_price'=>99.99,'plan_type'=>1,'status'=>1,'created_at'=>date("Y-m-d H:i:s"),'updated_at'=>date("Y-m-d H:i:s")],
-            ['uuid'=>Str::uuid()->toString(),'stripe_plan_id'=>'','plan_name'=>'Gold Yearly','plan_price'=>399.99,'plan_type'=>2,'status'=>1,'created_at'=>date("Y-m-d H:i:s"),'updated_at'=>date("Y-m-d H:i:s")]
+            [
+                'uuid'              => Str::uuid()->toString(),
+                'stripe_price_id'   => Crypt::encrypt(config('services.stripe.subscription.medium.price_id')),
+                'stripe_product_id' => Crypt::encrypt(config('services.stripe.subscription.medium.product_id')),
+                'name'              => 'Start Your 3-day Free trail to continue',
+                'price'             => 10,
+                'type'              => 'medium',
+                'status'            => 'active',
+                'created_at'        => date("Y-m-d H:i:s"),
+                'updated_at'        => date("Y-m-d H:i:s"),
+            ],
+            [
+                'uuid'              => Str::uuid()->toString(),
+                'stripe_price_id'   => Crypt::encrypt(config('services.stripe.subscription.premium.price_id')),
+                'stripe_product_id' => Crypt::encrypt(config('services.stripe.subscription.premium.product_id')),
+                'name'              => 'Start Your 3-day Free trail to continue',
+                'price'             => 30,
+                'type'              => 'premium',
+                'status'            => 'active',
+                'created_at'        => date("Y-m-d H:i:s"),
+                'updated_at'        => date("Y-m-d H:i:s"),
+            ],
         ];
 
-        if(plan::count() == 0){
-
-            plan::insert($userPlans);
+        if (! empty($userPlans)) {
+            Plan::insert($userPlans);
         }
     }
 }

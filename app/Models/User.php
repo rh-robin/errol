@@ -7,12 +7,13 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Billable;
 
     /**
      * The attributes that are mass assignable.
@@ -64,5 +65,17 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+
+    // Method to handle subscription update
+    public function updateStripeSubscription($session)
+    {
+        // Assuming you're using 'price_id' from Stripe's session to associate the subscription plan
+        $this->createOrUpdateStripeSubscription([
+            'stripe_status' => 'active',
+            'stripe_subscription_id' => $session->subscription,
+            'stripe_plan_id' => $session->line_items[0]->price->id,
+        ]);
     }
 }

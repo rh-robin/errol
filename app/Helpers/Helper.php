@@ -39,8 +39,4 @@ class Helper {
         return $slug;
     }
 
-    /*function settings() {
-        return \App\Models\SystemSetting::first();
-    }*/
-
 }

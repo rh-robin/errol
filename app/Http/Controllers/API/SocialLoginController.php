@@ -1,15 +1,13 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
-use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
-use Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class SocialLoginController extends Controller
@@ -32,7 +30,7 @@ class SocialLoginController extends Controller
                     ->first();
                 $isNewUser = false;
 
-                if (!$user) {
+                if (! $user) {
                     $password = Str::random(16);
                     $user     = User::create([
                         'name'              => $socialUser->getName() ?? $socialUser->getNickname(),
@@ -51,9 +49,9 @@ class SocialLoginController extends Controller
 
                 // Prepare success response
                 $success = [
-                    'id' => $user->id,
+                    'id'    => $user->id,
                     'email' => $user->email,
-                    'role' => $user->role,
+                    'role'  => $user->role,
                 ];
 
                 // Evaluate the message based on the $isNewUser condition
@@ -63,9 +61,9 @@ class SocialLoginController extends Controller
                 return $this->sendResponse($success, $message, $token);
 
             } else {
-                $error = 'Invalid credentials';
+                $error         = 'Invalid credentials';
                 $errorMessages = ['Invalid credentials'];
-                $code = 404;
+                $code          = 404;
                 return $this->sendError($error, $errorMessages, $code);
             }
         } catch (\Exception $e) {
@@ -75,6 +73,7 @@ class SocialLoginController extends Controller
 
     public function logout()
     {
+        dd('logout');
         try {
             // Invalidate the token
             JWTAuth::invalidate(JWTAuth::getToken());
@@ -84,11 +83,9 @@ class SocialLoginController extends Controller
         }
     }
 
-
-    public function getProfile(){
+    public function getProfile()
+    {
         $user = Auth::user();
         return $this->sendResponse($user, 'User profile', '', 200);
     }
 }
-
-
