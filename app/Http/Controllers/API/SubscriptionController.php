@@ -34,6 +34,11 @@ class SubscriptionController extends Controller
             return $this->sendError('Plan not found', [], 404);
         }
 
+        if($user->subscribed('default')) {
+            return $this->sendError('User already has a subscription', [], 400);
+        }
+
+
         try {
             // Create Customer
             $stripeCustomer = $user->createOrGetStripeCustomer();
