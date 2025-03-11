@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\API\WebHooksController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use Laravel\Cashier\Http\Controllers\WebHookController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,7 +18,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::any('stripe/webhook', [WebHookController::class, 'handleWebhook']);
+Route::any('stripe/webhook', [WebHooksController::class, 'handleWebhook']);
 
 /*Route::get('social-login/{provider}', [SocialLoginController::class, 'RedirectToProvider'])->name('social.login');
 Route::get('social-login/callback/{provider}', [SocialLoginController::class, 'HandleProviderCallback']);*/

@@ -37,6 +37,12 @@ class SubscriptionController extends Controller
         try {
             // Create Customer
             $stripeCustomer = $user->createOrGetStripeCustomer();
+
+            // Update customer id
+            $user->update([
+                'stripe_id' => $stripeCustomer->id,
+            ]);
+
             // Create a new Checkout Session
             $checkoutSession = Session::create([
                 'payment_method_types' => ['card'],

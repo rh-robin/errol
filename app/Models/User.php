@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -28,6 +27,7 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'role',
         'email_verified_at',
+        'stripe_id',
     ];
 
     /**
@@ -49,11 +49,12 @@ class User extends Authenticatable implements JWTSubject
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
 
-    public function pets(){
+    public function pets()
+    {
         return $this->hasMany(Pet::class);
     }
 
@@ -67,15 +68,14 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-
     // Method to handle subscription update
     public function updateStripeSubscription($session)
     {
         // Assuming you're using 'price_id' from Stripe's session to associate the subscription plan
         $this->createOrUpdateStripeSubscription([
-            'stripe_status' => 'active',
+            'stripe_status'          => 'active',
             'stripe_subscription_id' => $session->subscription,
-            'stripe_plan_id' => $session->line_items[0]->price->id,
+            'stripe_plan_id'         => $session->line_items[0]->price->id,
         ]);
     }
 }
