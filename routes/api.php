@@ -48,6 +48,9 @@ Route::get('/privacy-policy', [TipsCareApiController::class, 'policy']);
 Route::middleware(['auth:api'])->group(function () {
     Route::post('create-subscription', [SubscriptionController::class, 'createSubscription']);
     Route::post('cancel-subscription', [SubscriptionController::class, 'cancelSubscription']);
-    Route::any('checkout/success', [SubscriptionController::class, 'checkoutSuccess'])->name('checkout.success');
-    Route::get('checkout/cancel', [SubscriptionController::class, 'checkoutCancel'])->name('checkout.cancel');
 });
+// Subscription plans
+Route::get('subscription-plans', [SubscriptionController::class, 'getPlans']);
+
+Route::any('checkout/success', [SubscriptionController::class, 'checkoutSuccess'])->name('checkout.success');
+Route::get('checkout/cancel', [SubscriptionController::class, 'checkoutCancel'])->name('checkout.cancel');
