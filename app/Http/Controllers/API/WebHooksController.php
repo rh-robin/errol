@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\Plan;
 use App\Notifications\PaymentFailedNotification;
 use App\Notifications\SubscriptionPausedNotification;
 use App\Notifications\SubscriptionResumedNotification;
@@ -26,6 +27,7 @@ class WebHooksController extends Controller
         try {
             $event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
 
+            Log::info("Event type: " . $event);
 
             // Handle the event based on type
             switch ($event->type) {
@@ -84,12 +86,15 @@ class WebHooksController extends Controller
     // Handle payment success
     private function handlePaymentSuccess($event)
     {
-        $invoice = $event->data->object; // Contains the invoice object
+        $invoice = $event->data->object;
+        
         $user = User::where('stripe_id', $invoice->customer)->first();
 
         if ($user) {
-            // Mark the subscription as active
-            $user->subscription('default')->update(['stripe_status' => 'active']);
+            // Create or Update Subscriptions
+            $user->updateStripeSubscription($invoice);
+        }else{
+            Log::info("User not found");
         }
     }
 

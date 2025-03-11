@@ -6,6 +6,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Billable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
@@ -69,13 +70,28 @@ class User extends Authenticatable implements JWTSubject
     }
 
     // Method to handle subscription update
-    public function updateStripeSubscription($session)
+    public function updateStripeSubscription($invoice)
     {
-        // Assuming you're using 'price_id' from Stripe's session to associate the subscription plan
-        $this->createOrUpdateStripeSubscription([
-            'stripe_status'          => 'active',
-            'stripe_subscription_id' => $session->subscription,
-            'stripe_plan_id'         => $session->line_items[0]->price->id,
-        ]);
+        $plan = Plan::find($invoice->lines->data[0]->price->id);
+        if (! $plan) {
+            Log::info("Plan not found");
+        }
+        try {
+
+            $this->createOrUpdateStripeSubscription([
+                'stripe_id'     => $invoice->customer,
+                'stripe_price'  => $invoice->lines->data[0]->price->id,
+                'stripe_status' => 'active',
+                'plan_id'       => $plan->id,
+                'quantity'      => $invoice->lines->data[0]->quantity,
+                'ends_at'       => $invoice->period_end,
+            ]);
+
+            Log::info("Subscription updated");
+
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+        }
+
     }
 }
