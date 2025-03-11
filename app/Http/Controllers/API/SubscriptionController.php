@@ -5,7 +5,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Plan;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
@@ -34,10 +33,9 @@ class SubscriptionController extends Controller
             return $this->sendError('Plan not found', [], 404);
         }
 
-        if($user->subscribed('default')) {
+        if ($user->subscribed('default')) {
             return $this->sendError('User already has a subscription', [], 400);
         }
-
 
         try {
             // Create Customer
@@ -54,7 +52,7 @@ class SubscriptionController extends Controller
                 'customer'             => $stripeCustomer->id,
                 'line_items'           => [
                     [
-                        'price'    => Crypt::decrypt($plan->stripe_price_id),
+                        'price'    => $plan->stripe_price_id,
                         'quantity' => 1,
                     ],
                 ],
@@ -82,14 +80,25 @@ class SubscriptionController extends Controller
         // Ensure the user has a subscription
         if ($user->subscribed('default')) {
             $user->subscription('default')->cancel();
-            return response()->json(['message' => 'Subscription successfully canceled!'], 200);
+            return $this->sendResponse('Subscription cancelled successfully', [], 200);
         }
 
-        return response()->json(['error' => 'No active subscription found.'], 404);
+        return $this->sendError('User does not have a subscription', [], 400);
     }
 
     public function checkoutSuccess(Request $request)
     {
-        
+        return response()->json(['message' => 'Checkout successful!'], 200);
+    }
+
+    public function checkoutCancel(Request $request)
+    {
+        return response()->json(['message' => 'Checkout canceled!'], 200);
+    }
+
+    public function getPlans()
+    {
+        $plans = Plan::where('status', 'active')->get()->makeHidden(['stripe_price_id', 'stripe_product_id']);
+        return $this->sendResponse($plans, 'All plans', '', 200);
     }
 }

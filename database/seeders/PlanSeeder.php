@@ -3,7 +3,6 @@ namespace Database\Seeders;
 
 use App\Models\Plan;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 
 class PlanSeeder extends Seeder
@@ -16,8 +15,8 @@ class PlanSeeder extends Seeder
         $userPlans = [
             [
                 'uuid'              => Str::uuid()->toString(),
-                'stripe_price_id'   => Crypt::encrypt(config('services.stripe.subscription.medium.price_id')),
-                'stripe_product_id' => Crypt::encrypt(config('services.stripe.subscription.medium.product_id')),
+                'stripe_price_id'   => config('services.stripe.subscription.medium.price_id'),
+                'stripe_product_id' => config('services.stripe.subscription.medium.product_id'),
                 'name'              => 'Start Your 3-day Free trail to continue',
                 'price'             => 10,
                 'type'              => 'medium',
@@ -27,8 +26,8 @@ class PlanSeeder extends Seeder
             ],
             [
                 'uuid'              => Str::uuid()->toString(),
-                'stripe_price_id'   => Crypt::encrypt(config('services.stripe.subscription.premium.price_id')),
-                'stripe_product_id' => Crypt::encrypt(config('services.stripe.subscription.premium.product_id')),
+                'stripe_price_id'   => config('services.stripe.subscription.premium.price_id'),
+                'stripe_product_id' => config('services.stripe.subscription.premium.product_id'),
                 'name'              => 'Start Your 3-day Free trail to continue',
                 'price'             => 30,
                 'type'              => 'premium',
