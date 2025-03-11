@@ -72,15 +72,16 @@ class User extends Authenticatable implements JWTSubject
     // Method to handle subscription update
     public function updateStripeSubscription($invoice)
     {
-        $plan = Plan::find($invoice->lines->data[0]->price->id);
+        $plan = Plan::where('stripe_price_id', $invoice->lines->data[0]->price['id'])->first();
+
         if (! $plan) {
             Log::info("Plan not found");
         }
         try {
-
-            $this->createOrUpdateStripeSubscription([
+            $this->subscriptions()->updateOrCreate([
+                'type' => $plan->type,
                 'stripe_id'     => $invoice->customer,
-                'stripe_price'  => $invoice->lines->data[0]->price->id,
+                'stripe_price'  => $plan->stripe_price_id,
                 'stripe_status' => 'active',
                 'plan_id'       => $plan->id,
                 'quantity'      => $invoice->lines->data[0]->quantity,
