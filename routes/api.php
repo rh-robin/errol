@@ -28,15 +28,17 @@ Route::post('/analyze-food/claude', [FoodApiController::class, 'analyzeFoodClaud
 
 /* ====================== weight api ===================*/
 Route::post('/weight/store', [WeightApiController::class, 'storeWeight']);
-Route::get('/weight/{pet_id}', [WeightApiController::class, 'getWeight']);
+Route::get('/weight/week/{pet_id}', [WeightApiController::class, 'getWeightByWeek']);
+Route::get('/weight/month/{pet_id}', [WeightApiController::class, 'getWeightByMonth']);
+Route::get('/weight/six-month/{pet_id}', [WeightApiController::class, 'getWeightBySixMonths']);
 
-/* ======================== stripe =================*/
-/*Route::post('/create-customer', [StripeController::class, 'createCustomer']);
-Route::post('/subscribe', [StripeController::class, 'subscribe']);
-Route::post('/payment-intent', [StripeController::class, 'createPaymentIntent']);
-Route::post('/webhook', [StripeController::class, 'handleWebhook']);*/
 
+
+/* ====================== TIPS CARE api ===================*/
 Route::get('/tips-and-care', [TipsCareApiController::class, 'index']);
+
+
+/* ====================== BREED API ===================*/
 Route::get('/breeds', [BreedsApiController::class, 'index']);
 Route::get('/fetch-breeds/cat', [BreedsApiController::class, 'catBreeds']);
 Route::get('/fetch-breeds/dog', [BreedsApiController::class, 'dogBreeds']);
