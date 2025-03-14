@@ -41,10 +41,12 @@ return [
         'redirect'      => env('GOOGLE_REDIRECT_URI'),
     ],
 
-    'twitter'  => [
-        'client_id'     => env('TWITTER_CLIENT_ID'),
-        'client_secret' => env('TWITTER_CLIENT_SECRET'),
-        'redirect'      => env('TWITTER_REDIRECT_URI'),
+    'twitter' => [
+        'api_key' => env('TWITTER_API_KEY'),
+        'api_secret' => env('TWITTER_API_SECRET'),
+        'access_token' => env('TWITTER_ACCESS_TOKEN'),
+        'access_secret' => env('TWITTER_ACCESS_SECRET'),
+        'bearer_token' => env('TWITTER_BEARER_TOKEN'),
     ],
 
     'openAi'   => [

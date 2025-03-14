@@ -3,7 +3,11 @@ use App\Http\Controllers\Web\Backend\AdminController;
 use App\Http\Controllers\Web\Backend\BreedController;
 use App\Http\Controllers\Web\Backend\CharacteristicController;
 use App\Http\Controllers\Web\Backend\TipsCareController;
+use App\Http\Controllers\Web\Backend\TwitterController;
+use App\Services\TwitterService;
 use Illuminate\Support\Facades\Route;
+
+use Abraham\TwitterOAuth\TwitterOAuth;
 
 
 Route::prefix('admin')
@@ -48,5 +52,79 @@ Route::prefix('admin')
                 Route::get('/fetch', 'fetchCharacteristics')->name('fetch');
                 Route::post('/crate-update', 'createOrUpdate')->name('createOrUpdate');
             });
+
+
 });
+
+/*================ TWITTER BOT ============*/
+Route::get('/twitter/reply-mentions', [TwitterController::class, 'replyMentions']);
+Route::get('/twitter/send-dms', [TwitterController::class, 'sendDMs']);
+
+Route::get('/get-user-id/{username}', function ($username, TwitterService $twitterService) {
+    //dd($username);
+    $userId = $twitterService->getUserIdByUsername($username);
+    return response()->json(['username' => $username, 'user_id' => $userId]);
+});
+
+
+Route::get('/test-reply', function (TwitterService $twitterService) {
+    $tweetId = '1234567890123456789'; // Replace with a real Tweet ID
+    $username = 'example_user'; // Replace with the Twitter username of the tweet author
+
+    $response = $twitterService->replyToMention($tweetId, $username);
+    return response()->json($response);
+});
+
+Route::get('/test-dm', function (TwitterService $twitterService) {
+    $userId = '1536955599702740994'; // Replace with a real Twitter user ID
+    $username = 'Arifur2911'; // Replace with the Twitter username
+
+    $response = $twitterService->sendDirectMessage($userId, $username);
+    return response()->json($response);
+});
+
+Route::get('/test-twitter', function (TwitterService $twitterService) {
+
+    $consumer_key = 'JHfop0ZfKgDvAOzaNJ7mu7DUK';
+    $consumer_secret = '7DDnFMpkYHD9Knuj6lNLXs2ZRcnYMZYKAszGfclmCRFERJwztw';
+    $oauth_token = '1891791720662347776-plEXS8n8MazP79GEX9NwbHnUNX9ah7';
+    $oauth_token_secret = 'hX85taikPjX97dEFoRrhyHIyu6jPitx6xcVgV2khXYbdR';
+
+    $connection = new TwitterOAuth($consumer_key, $consumer_secret, $oauth_token, $oauth_token_secret);
+    $content = $connection->get("users/me");
+    //return response()->json($content);
+    //return $twitterService->testTwitterConnection();
+
+
+    $recipient_id = '1536955599702740994';  // The recipient's user ID
+
+    // Create a new connection with TwitterOAuth
+    $connection = new TwitterOAuth($consumer_key, $consumer_secret, $oauth_token, $oauth_token_secret);
+
+    // Set the API version to v2 (optional)
+    $connection->setApiVersion('2');
+
+    $message_text = "Hello! This is a test direct message from my Laravel app. 🚀";
+
+    // Twitter API v2 endpoint to send a DM
+    $response = $connection->post("dm_conversations", [
+        "event" => [
+            "message_create" => [
+                "target" => ["recipient_id" => $recipient_id],
+                "message_data" => ["text" => $message_text]
+            ]
+        ]
+    ]);
+
+    // Check if the request was successful
+    if (isset($response->errors)) {
+        return response()->json(['error' => $response->errors]);
+    }
+
+    return response()->json([
+        'message' => 'DM sent successfully!',
+        'response' => $response
+    ]);
+});
+
 
