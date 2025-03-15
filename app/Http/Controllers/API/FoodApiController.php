@@ -202,9 +202,27 @@ class FoodApiController extends Controller
         if ($validator->fails()) {
             return $this->sendError('Validation failed', $validator->errors()->toArray(), 422);
         }
+
         $date = Carbon::createFromFormat('d/m/Y', $request->date)->format('Y-m-d');
 
-        $data = FoodInfo::where('pet_id', $request->pet_id)->whereDate('created_at', $date)->get();
+        $data = FoodInfo::where('pet_id', $request->pet_id)
+            ->whereDate('created_at', $date)
+            ->get()
+            ->map(function ($food) {
+                return [
+                    'id' => $food->id,
+                    'pet_id' => $food->pet_id,
+                    'name' => $food->name,
+                    'image' => $food->image,
+                    'calorie' => $food->calorie,
+                    'exercise_time' => $food->exercise_time,
+                    'protein' => $food->protein,
+                    'carbs' => $food->carbs,
+                    'fat' => $food->fat,
+                    'weight' => $food->weight,
+                    'time' => Carbon::parse($food->created_at)->format('h:i A'), // Format time
+                ];
+            });
 
         // Calculate total values
         $total_calorie = $data->sum('calorie');
@@ -223,9 +241,11 @@ class FoodApiController extends Controller
             'total_exercise_time' => $total_exercise_time,
         ];
 
-        $message = 'food data for date: '.$date.'.';
+        $message = 'Food data for date: ' . $date . '.';
         return $this->sendResponse($response, $message, '', 200);
     }
+
+
 
 
 
