@@ -28,9 +28,9 @@ Route::post('/analyze-food/claude', [FoodApiController::class, 'analyzeFoodClaud
 
 /* ====================== WEIGHT API =====================*/
 Route::post('/weight/store', [WeightApiController::class, 'storeWeight']);
-Route::get('/weight/week/{pet_id}', [WeightApiController::class, 'getWeightByWeek']);
-Route::get('/weight/month/{pet_id}', [WeightApiController::class, 'getWeightByMonth']);
-Route::get('/weight/six-month/{pet_id}', [WeightApiController::class, 'getWeightBySixMonths']);
+Route::get('/pet-weight/this-week/{pet_id}', [WeightApiController::class, 'petWeightThisWeek']);
+Route::get('/pet-weight/this-month/{pet_id}', [WeightApiController::class, 'petWeightThisMonth']);
+Route::get('/pet-weight/six-month/{pet_id}', [WeightApiController::class, 'petWeightSixMonth']);
 
 //food weight =====
 Route::get('/food-weight/today/{pet_id}', [WeightApiController::class, 'foodWeightToday']);

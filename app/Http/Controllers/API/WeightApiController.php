@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Validator;
 class WeightApiController extends Controller
 {
     use ResponseTrait;
+
+
     public function storeWeight(Request $request)
     {
         // Validate the request
@@ -57,44 +59,13 @@ class WeightApiController extends Controller
 
     }
 
-    /*public function getWeight($pet_id){
+    /*public function getWeightByWeeks($pet_id) {
+        $startDate = now()->startOfWeek(); // Start of the current week
+        $sixWeeksAgo = $startDate->copy()->subWeeks(5); // Get date 6 weeks ago
+
+        // Get weight records for the last 6 weeks sorted by updated_at
         $weights = Weight::where('pet_id', $pet_id)
-            ->orderBy('updated_at', 'asc')
-            ->get(['current_weight', 'updated_at', 'weight_goal']);
-
-
-        $weightsArray = $weights->toArray();
-
-        // Transform the data to rename and format `updated_at`
-        $weightsArray = $weights->map(function ($weight) {
-            return [
-                'current_weight' => $weight->current_weight,
-                'date' => $weight->updated_at->toDateString(), // Converts to YYYY-MM-DD format
-            ];
-        })->toArray();
-        //dd($weights->last());
-
-        // Get the last weight_goal value if there is at least one record
-        $weightGoal = $weights->last()->weight_goal ?? null;
-
-        // Prepare the final response array
-        $response = [
-            'weights' => $weightsArray, // Array of current_weight and updated_at
-            'weight_goal' => $weightGoal // Last weight goal value
-        ];
-
-
-        $message = 'Weight data saved successfully.';
-        return $this->sendResponse($response, $message, '', 201);
-    }*/
-
-    public function getWeightByWeek($pet_id) {
-        $today = now(); // Today’s date
-        $sevenDaysAgo = $today->copy()->subDays(6); // Get date 6 days ago (total 7 days including today)
-
-        // Get weight records for the last 7 days sorted by updated_at
-        $weights = Weight::where('pet_id', $pet_id)
-            ->whereBetween('updated_at', [$sevenDaysAgo, $today]) // Get data for the last 7 days
+            ->where('updated_at', '>=', $sixWeeksAgo)
             ->orderBy('updated_at', 'asc')
             ->get(['current_weight', 'updated_at', 'weight_goal']);
 
@@ -103,27 +74,27 @@ class WeightApiController extends Controller
             return $this->sendResponse(['weights' => [], 'weight_goal' => null], 'No weight data found.', '', 200);
         }
 
-        $dailyData = [];
+        $weeklyData = [];
         $lastWeight = null; // Store the last known weight
 
-        // Loop through the last 7 days
-        for ($i = 0; $i < 7; $i++) {
-            $date = $sevenDaysAgo->copy()->addDays($i); // Get the specific date
+        // Loop through the last 6 weeks (every 7 days)
+        for ($i = 0; $i < 6; $i++) {
+            $weekDate = $sixWeeksAgo->copy()->addDays($i * 7); // Increment by 7 days
 
-            // Get the last recorded weight up to this date
-            $dayWeight = $weights->where('updated_at', '<=', $date->endOfDay())->last();
+            // Get the last weight recorded up to this week
+            $weekWeight = $weights->where('updated_at', '<=', $weekDate->endOfWeek())->last();
 
-            // If no weight recorded on this date, use the last known weight
-            if (!$dayWeight && $lastWeight) {
-                $dayWeight = $lastWeight;
+            // If no weight data for this week, use the last known weight
+            if (!$weekWeight && $lastWeight) {
+                $weekWeight = $lastWeight;
             }
 
             // Store the last known weight for fallback in the next iteration
-            if ($dayWeight) {
-                $lastWeight = $dayWeight;
-                $dailyData[] = [
-                    'current_weight' => $dayWeight->current_weight,
-                    'date' => $date->format('M j'), // Format: "Mar 10"
+            if ($weekWeight) {
+                $lastWeight = $weekWeight;
+                $weeklyData[] = [
+                    'current_weight' => $weekWeight->current_weight,
+                    'date' => $weekDate->format('M j'), // Format: "Mar 1"
                 ];
             }
         }
@@ -133,66 +104,187 @@ class WeightApiController extends Controller
 
         // Prepare the response
         $response = [
-            'weights' => $dailyData,
+            'weights' => $weeklyData,
             'weight_goal' => $weightGoal,
         ];
 
         return $this->sendResponse($response, 'Weight data retrieved successfully.', '', 200);
-    }
+    }*/
 
 
+    /*================== PET WEIGHT OF THIS WEEK ===============*/
+    public function petWeightThisWeek($pet_id){
+        $today = now();
+        $startDate = $today->subDays(6)->startOfDay(); // 7-day range starting from last Sunday
 
-    /*================= GET WEIGHT BY MONTH =================*/
-    public function getWeightByMonth($pet_id) {
-        $sixMonthsAgo = now()->subMonths(5)->startOfMonth(); // Get date 6 months ago
-
-        // Get weight records for the last 6 months sorted by updated_at
+        // Fetch weights within the last 7 days, ordered by date
         $weights = Weight::where('pet_id', $pet_id)
-            ->where('updated_at', '>=', $sixMonthsAgo)
+            ->where('updated_at', '>=', $startDate)
             ->orderBy('updated_at', 'asc')
             ->get(['current_weight', 'updated_at', 'weight_goal']);
 
-        // If no data is found, return an empty response
-        if ($weights->isEmpty()) {
-            return $this->sendResponse(['weights' => [], 'weight_goal' => null], 'No weight data found.', '', 200);
+        // Initialize default data structure with day names
+        $weekData = collect();
+        for ($i = 0; $i < 7; $i++) {
+            $date = now()->subDays(6 - $i); // Iterate from 6 days ago to today
+            $weekData->put($date->format('l'), null);
         }
 
-        $monthlyData = [];
-        $lastWeight = null; // Store the last known weight
+        // Fill available weight data into the week structure
+        $lastWeight = null;
+        foreach ($weights as $weight) {
+            $dayName = $weight->updated_at->format('l');
+            $lastWeight = $weight->current_weight;
+            $weekData[$dayName] = $lastWeight;
+        }
 
-        // Loop through the last 6 months
-        for ($i = 0; $i < 6; $i++) {
-            $monthDate = $sixMonthsAgo->copy()->addMonths($i)->endOfMonth(); // Get end of each month
-
-            // Get the last weight recorded up to this month
-            $monthWeight = $weights->where('updated_at', '<=', $monthDate)->last();
-
-            // If no weight data for this month, use the last known weight
-            if (!$monthWeight && $lastWeight) {
-                $monthWeight = $lastWeight;
-            }
-
-            // Store the last known weight for fallback in the next iteration
-            if ($monthWeight) {
-                $lastWeight = $monthWeight;
-                $monthlyData[] = [
-                    'current_weight' => $monthWeight->current_weight,
-                    'month' => $monthDate->format('F'), // Format: "March", "April"
-                ];
+        // Fill missing days with the previous day's weight
+        $previousWeight = null;
+        foreach ($weekData as $day => $value) {
+            if ($value === null) {
+                $weekData[$day] = $previousWeight;
+            } else {
+                $previousWeight = $value;
             }
         }
 
-        // Get the latest weight goal from the last record
+        // Get last recorded weight goal within the 7-day range
         $weightGoal = $weights->last()->weight_goal ?? null;
 
-        // Prepare the response
+        // Prepare response
         $response = [
-            'weights' => $monthlyData,
-            'weight_goal' => $weightGoal,
+            'weights' => $weekData->filter()->map(fn($weight, $day) => [
+                'day' => $day,
+                'current_weight' => $weight,
+            ])->values(), // Remove null values and reset keys
+            'weight_goal' => $weightGoal
         ];
 
-        return $this->sendResponse($response, 'Month wise weight data retrieved successfully.', '', 200);
+        return $this->sendResponse($response, 'Weight data of this week retrieved successfully.', '', 200);
     }
+    /*================== END PET WEIGHT OF THIS WEEK ===============*/
+
+
+
+    /*================= GET PET WEIGHT OF THIS MONTH (30 days) =================*/
+    public function petWeightThisMonth($pet_id)
+    {
+        $today = now();
+        $startDate = $today->subDays(29)->startOfDay(); // Last 30 days including today
+
+        // Fetch weights from the last 30 days, ordered by date
+        $weights = Weight::where('pet_id', $pet_id)
+            ->where('updated_at', '>=', $startDate)
+            ->orderBy('updated_at', 'asc')
+            ->get(['current_weight', 'updated_at', 'weight_goal']);
+
+        // Determine step size (every 5 days)
+        $dateIntervals = collect();
+        for ($i = 5; $i <= 30; $i += 5) {
+            $date = now()->subDays(30 - $i); // Get interval dates
+            $dateIntervals->put($date->toDateString(), null);
+        }
+
+        // Fill available weight data into the selected interval structure
+        $lastWeight = null;
+        foreach ($weights as $weight) {
+            foreach ($dateIntervals as $intervalDate => $value) {
+                if ($weight->updated_at->toDateString() <= $intervalDate) {
+                    $lastWeight = $weight->current_weight;
+                    $dateIntervals[$intervalDate] = $lastWeight;
+                }
+            }
+        }
+
+        // Fill missing dates with the previous available weight
+        $previousWeight = null;
+        foreach ($dateIntervals as $date => $value) {
+            if ($value === null) {
+                $dateIntervals[$date] = $previousWeight;
+            } else {
+                $previousWeight = $value;
+            }
+        }
+
+        // Filter out empty/null values
+        $filteredWeights = $dateIntervals->filter()->map(fn($weight, $date) => [
+            'date' => Carbon::parse($date)->format('M j'),
+            'current_weight' => $weight,
+        ])->values();
+
+        // Get last recorded weight goal within the last 30 days
+        $weightGoal = $weights->last()->weight_goal ?? null;
+
+        // Prepare response
+        $response = [
+            'weights' => $filteredWeights,
+            'weight_goal' => $weightGoal
+        ];
+
+        return $this->sendResponse($response, 'Weight data of this month retrieved successfully.', '', 200);
+    }
+    /*================= END GET PET WEIGHT OF THIS MONTH (30 days) =================*/
+
+
+
+    /*================= GET PET WEIGHT OF LAST SIX MONTH =================*/
+    public function petWeightSixMonth($pet_id)
+    {
+        $today = now();
+        $startDate = $today->subMonths(6)->startOfMonth(); // Last 6 months including current month
+
+        // Fetch weights from the last 6 months, ordered by date
+        $weights = Weight::where('pet_id', $pet_id)
+            ->where('updated_at', '>=', $startDate)
+            ->orderBy('updated_at', 'asc')
+            ->get(['current_weight', 'updated_at', 'weight_goal']);
+
+        // Initialize structure for last 6 months
+        $monthData = collect();
+        for ($i = 5; $i >= 0; $i--) {
+            $date = now()->subMonths($i)->startOfMonth(); // Get month start dates
+            $monthData->put($date->format('M Y'), null);
+        }
+
+        // Fill available weight data into the month structure
+        $lastWeight = null;
+        foreach ($weights as $weight) {
+            foreach ($monthData as $month => $value) {
+                if ($weight->updated_at->format('M Y') == $month) {
+                    $lastWeight = $weight->current_weight;
+                    $monthData[$month] = $lastWeight;
+                }
+            }
+        }
+
+        // Fill missing months with the previous available weight
+        $previousWeight = null;
+        foreach ($monthData as $month => $value) {
+            if ($value === null) {
+                $monthData[$month] = $previousWeight;
+            } else {
+                $previousWeight = $value;
+            }
+        }
+
+        // Filter out empty/null values
+        $filteredWeights = $monthData->filter()->map(fn($weight, $month) => [
+            'month' => $month,
+            'current_weight' => $weight,
+        ])->values();
+
+        // Get last recorded weight goal within the last 6 months
+        $weightGoal = $weights->last()->weight_goal ?? null;
+
+        // Prepare response
+        $response = [
+            'weights' => $filteredWeights,
+            'weight_goal' => $weightGoal
+        ];
+
+        return $this->sendResponse($response, 'Weight data of six months retrieved successfully.', '', 200);
+    }
+
 
 
 
