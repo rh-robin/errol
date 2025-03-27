@@ -32,7 +32,7 @@ class TwitterService
     }
 
     // Send Direct Message
-    public function sendDirectMessage($userId, $username)
+    public function sendDirectMessagess($userId, $username)
     {
         /*if (SentMessage::where('user_id', $userId)->exists()) {
             return "Message already sent to {$username}";
@@ -66,19 +66,77 @@ class TwitterService
     }
 
 
-    /*public function getUserIdByUsername($username)
+    public function sendDirectMessage($userId, $username)
     {
-        $url = "https://api.twitter.com/2/users/by/username/{$username}";
+        $rateLimitStatus = $this->twitter->get('application/rate_limit_status');
+        /*$message = "Hey {$username}, ready to connect with pet lovers? Start your 3-day free PAWS AI trial: [link]";
+        $endpoint = "dm_conversations/with/{$userId}/messages";
+        $payload = ['text' => $message];
 
-        $response = Http::withToken(config('services.twitter.bearer_token'))
-            ->get($url);
+        // Retry logic for rate limiting
+        $retries = 3;
+        $delay = 1; // Initial delay in seconds
 
-        if ($response->successful()) {
-            return $response->json()['data']['id']; // Returns user ID
+        for ($i = 0; $i < $retries; $i++) {
+            $response = $this->twitter->post($endpoint, $payload);
+            if ($response->status == 429) {
+                \Log::info("Rate limit hit. Retrying in {$delay} seconds...");
+                sleep($delay); // Wait before retrying
+                $delay *= 2; // Exponential backoff
+            } else {
+                break; // No error, proceed with the response
+            }
         }
 
-        return null;
-    }*/
+        if (isset($response->errors)) {
+            return response()->json(['error' => $response->errors]);
+        }*/
+
+
+        $curl = curl_init();
+
+        $participant_id = '1898598113235075074'; // Replace with the recipient's Twitter user ID
+        $bearer_token = 'AAAAAAAAAAAAAAAAAAAAAAZlzgEAAAAAypJG6FEmH%2Bsewz6HgcMMr4bq1hw%3D2WA4V51X8c59xPYlMNSIoEPYjzURliZUUxTYIm35wGaRtyrEn3'; // Replace with your actual Bearer token
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => "https://api.twitter.com/2/dm_conversations/with/{$participant_id}/messages",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => json_encode([
+                'attachments' => [
+                    [
+                        'media_id' => '1146654567674912769' // Replace with the actual media ID if you want to send an image
+                    ]
+                ],
+                'text' => 'Hello, this is a test message from the API!' // Replace with the message you want to send
+            ]),
+            CURLOPT_HTTPHEADER => [
+                "Authorization: Bearer {$bearer_token}",
+                "Content-Type: application/json"
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+            echo "cURL Error #:" . $err;
+        } else {
+            echo "Response: " . $response;
+        }
+
+        //return response()->json(['success' => 'DM sent successfully', 'rateLimmit' => $rateLimitStatus]);
+    }
+
+
+
+
 
     public function getUserIdByUsername($username)
     {

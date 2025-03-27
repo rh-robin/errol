@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('role', ['admin', 'user'])->default('user');
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();
+            $table->enum('selected_pet', ['cat', 'dog'])->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

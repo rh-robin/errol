@@ -52,6 +52,7 @@ class SocialLoginController extends Controller
                     'id'    => $user->id,
                     'email' => $user->email,
                     'role'  => $user->role,
+                    'selected_pet'  => $user->selected_pet,
                 ];
 
                 // Evaluate the message based on the $isNewUser condition
@@ -73,7 +74,6 @@ class SocialLoginController extends Controller
 
     public function logout()
     {
-        dd('logout');
         try {
             // Invalidate the token
             JWTAuth::invalidate(JWTAuth::getToken());

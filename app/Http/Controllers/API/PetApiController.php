@@ -180,4 +180,51 @@ class PetApiController extends Controller
     }
 
 
+    public function selectPet(Request $request)
+    {
+        // Validate request data
+        $validator = Validator::make($request->all(), [
+            'selected_pet' => 'required|string|in:cat,dog',
+        ]);
+
+        if ($validator->fails()) {
+            //return response()->json(['errors' => $validator->errors()], 422);
+            return $this->sendError('Validation failed', $validator->errors()->toArray(), 422);
+        }
+
+        try {
+            if(Auth::check()) {
+                $user = Auth::user();
+                $user->selected_pet = $request->selected_pet;
+                $user->save();
+            }else{
+                return $this->sendError('User is not authenticated. Please log in to continue.', [], 401);
+            }
+        }catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), [], 500);
+        }
+    }
+
+
+
+    public function selectedPet()
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+
+            if ($user->selected_pet) {
+                $response = [
+                    'selected_pet' => $user->selected_pet,
+                ];
+
+                return $this->sendResponse($response, 'Selected pet retrieved successfully.');
+            } else {
+                return $this->sendError('No pet has been selected by the user.', [], 404);
+            }
+        } else {
+            return $this->sendError('User is not authenticated. Please log in to continue.', [], 401);
+        }
+    }
+
+
 }

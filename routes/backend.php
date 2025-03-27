@@ -76,19 +76,57 @@ Route::get('/test-reply', function (TwitterService $twitterService) {
 });
 
 Route::get('/test-dm', function (TwitterService $twitterService) {
-    $userId = '1536955599702740994'; // Replace with a real Twitter user ID
-    $username = 'Arifur2911'; // Replace with the Twitter username
+    $userId = '1898598113235075074'; // Replace with a real Twitter user ID
+    $username = 'Mamon12209'; // Replace with the Twitter username
 
     $response = $twitterService->sendDirectMessage($userId, $username);
     return response()->json($response);
 });
 
+
+
+Route::get('/send-dm', function () {
+
+    $participant_id = '';  // Replace with the recipient's Twitter user ID
+    $consumer_key = ''; // Replace with your consumer key
+    $consumer_secret = ''; // Replace with your consumer secret
+    $oauth_token = ''; // Replace with your OAuth token
+    $oauth_token_secret = ''; // Replace with your OAuth token secret
+
+    // Initialize TwitterOAuth with OAuth credentials
+    $oauth = new TwitterOAuth($consumer_key, $consumer_secret, $oauth_token, $oauth_token_secret);
+    $oauth->setApiVersion('2'); // Ensure you're using v2 of the Twitter API
+
+    // Prepare the message to send in DM
+    $message = 'Hello, this is a test message from the API!';
+
+    // Send the POST request to Twitter API v2 to send a DM
+    $response = $oauth->post("dm_conversations/with/{$participant_id}/messages", [
+        'text' => $message // The message text you want to send
+    ]);
+
+    // Log the response
+    \Log::info('Twitter DM API Response:', (array) $response);
+
+    // Check if there are any errors in the response
+    if (isset($response->errors)) {
+        return response()->json(['error' => $response->errors]);
+    }
+
+    // Return success response
+    return response()->json(['success' => 'DM sent successfully', 'response' => $response]);
+});
+
+
+
+
+
 Route::get('/test-twitter', function (TwitterService $twitterService) {
 
-    $consumer_key = 'JHfop0ZfKgDvAOzaNJ7mu7DUK';
-    $consumer_secret = '7DDnFMpkYHD9Knuj6lNLXs2ZRcnYMZYKAszGfclmCRFERJwztw';
-    $oauth_token = '1891791720662347776-plEXS8n8MazP79GEX9NwbHnUNX9ah7';
-    $oauth_token_secret = 'hX85taikPjX97dEFoRrhyHIyu6jPitx6xcVgV2khXYbdR';
+    $consumer_key = '';
+    $consumer_secret = '';
+    $oauth_token = '';
+    $oauth_token_secret = '';
 
     $connection = new TwitterOAuth($consumer_key, $consumer_secret, $oauth_token, $oauth_token_secret);
     $content = $connection->get("users/me");
@@ -96,7 +134,7 @@ Route::get('/test-twitter', function (TwitterService $twitterService) {
     //return $twitterService->testTwitterConnection();
 
 
-    $recipient_id = '1536955599702740994';  // The recipient's user ID
+    $recipient_id = '';  // The recipient's user ID
 
     // Create a new connection with TwitterOAuth
     $connection = new TwitterOAuth($consumer_key, $consumer_secret, $oauth_token, $oauth_token_secret);

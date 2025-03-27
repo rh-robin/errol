@@ -19,6 +19,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/pet/store', [PetApiController::class, 'store']);
     Route::post('/pet/update/{id}', [PetApiController::class, 'update']);
     Route::get('/my-pet', [PetApiController::class, 'myPet']);
+    Route::post('/select-pet', [PetApiController::class, 'selectPet']);
+    Route::get('/selected-pet', [PetApiController::class, 'selectedPet']);
 });
 
 /*================= food api ==================*/

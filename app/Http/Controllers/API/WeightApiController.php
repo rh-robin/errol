@@ -14,7 +14,6 @@ class WeightApiController extends Controller
 {
     use ResponseTrait;
 
-
     public function storeWeight(Request $request)
     {
         // Validate the request
@@ -284,68 +283,7 @@ class WeightApiController extends Controller
 
         return $this->sendResponse($response, 'Weight data of six months retrieved successfully.', '', 200);
     }
-
-
-
-
-    /*================== GE WEIGHT BY EVERY 6 MONTH =================*/
-    public function getWeightBySixMonths($pet_id) {
-        $threeYearsAgo = now()->subYears(3)->startOfMonth(); // Get date 3 years ago
-
-        // Get weight records for the last 3 years sorted by updated_at
-        $weights = Weight::where('pet_id', $pet_id)
-            ->where('updated_at', '>=', $threeYearsAgo)
-            ->orderBy('updated_at', 'asc')
-            ->get(['current_weight', 'updated_at', 'weight_goal']);
-
-        // If no data is found, return an empty response
-        if ($weights->isEmpty()) {
-            return $this->sendResponse(['weights' => [], 'weight_goal' => null], 'No weight data found.', '', 200);
-        }
-
-        $monthlyData = [];
-        $lastWeight = null; // Store the last known weight
-
-        // Get all months from 3 years ago until now
-        $startPeriod = $threeYearsAgo->copy();
-        $endDate = now()->endOfMonth(); // Up to the current month
-
-        while ($startPeriod <= $endDate) {
-            $endPeriod = $startPeriod->copy()->endOfMonth(); // End of the month
-
-            // Get the last recorded weight in this month
-            $monthWeight = $weights->whereBetween('updated_at', [$startPeriod, $endPeriod])->last();
-
-            // If no weight data for this month, use the last known weight
-            if (!$monthWeight && $lastWeight) {
-                $monthWeight = $lastWeight;
-            }
-
-            // Store the last known weight for fallback in the next iteration
-            if ($monthWeight) {
-                $lastWeight = $monthWeight;
-                $monthlyData[] = [
-                    'current_weight' => $monthWeight->current_weight,
-                    'month' => $startPeriod->format('M Y'), // Example: "Mar 2025"
-                ];
-            }
-
-            // Move to the next month
-            $startPeriod->addMonth()->startOfMonth();
-        }
-
-        // Get the latest weight goal
-        $weightGoal = $weights->last()->weight_goal ?? null;
-
-        // Prepare the response
-        $response = [
-            'weights' => $monthlyData,
-            'weight_goal' => $weightGoal,
-        ];
-
-        return $this->sendResponse($response, 'Monthly weight data retrieved successfully.', '', 200);
-    }
-
+    /*================= END GET PET WEIGHT OF LAST SIX MONTH =================*/
 
 
 
