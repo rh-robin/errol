@@ -197,6 +197,12 @@ class PetApiController extends Controller
                 $user = Auth::user();
                 $user->selected_pet = $request->selected_pet;
                 $user->save();
+
+                $response = [
+                    'selected_pet' => $user->selected_pet,
+                ];
+
+                return $this->sendResponse($response, 'Select pet saved successfully.');
             }else{
                 return $this->sendError('User is not authenticated. Please log in to continue.', [], 401);
             }
