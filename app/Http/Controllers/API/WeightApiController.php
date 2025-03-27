@@ -323,7 +323,7 @@ class WeightApiController extends Controller
 
 
 
-    /*========================== GET FOOD WEIGHT BY DATE ========================*/
+    /*========================== GET FOOD WEIGHT of THIS WEEK ========================*/
     public function foodWeightThisWeek($pet_id)
     {
         $startDate = Carbon::today()->subDays(6); // Start from 6 days ago
@@ -339,24 +339,39 @@ class WeightApiController extends Controller
 
         // Prepare the response array for the last 7 days
         $response = [];
+        $totalWeightForWeek = 0; // Variable to store the total weight of the week
+
         for ($i = 0; $i < 7; $i++) {
             $date = $startDate->copy()->addDays($i);
             $dayName = $date->format('l'); // Day name (Sunday, Monday, etc.)
             $dateString = $date->format('Y-m-d'); // Exact date in format Y-m-d
 
             // Calculate total weight for the day
-            $totalWeight = isset($foodData[$dateString])
+            $totalWeightForDay = isset($foodData[$dateString])
                 ? $foodData[$dateString]->sum('weight')
                 : 0; // If no data, set weight to 0
 
+            // Add the daily weight to the total weekly weight
+            $totalWeightForWeek += $totalWeightForDay;
+
             $response[] = [
                 'day' => $dayName,
-                'weight' => $totalWeight,
+                'weight' => $totalWeightForDay,
             ];
         }
 
-        return $this->sendResponse($response, "All food weight of this week.", null, 200);
+        // Return the formatted response
+        return $this->sendResponse(
+            [
+                'food_details' => $response,
+                'total_weight' => $totalWeightForWeek,
+            ],
+            "This week's all food weight and total weight.",
+            '',
+            200
+        );
     }
+
 
 
 
