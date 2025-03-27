@@ -388,28 +388,42 @@ class WeightApiController extends Controller
             ->groupBy(function ($food) {
                 return Carbon::parse($food->created_at)->format('Y-m'); // Group by month (Y-m format)
             });
-        //dd($foodData);
 
         // Prepare the response array for the last 5 months
         $response = [];
+        $totalWeightForFiveMonths = 0; // Variable to store the total weight for the last 5 months
+
         for ($i = 0; $i < 5; $i++) {
             $date = $startDate->copy()->addMonths($i);
             $monthName = $date->format('F Y'); // Full month name with year (e.g., March 2025)
             $dateString = $date->format('Y-m'); // Exact month in format Y-m
 
             // Calculate total weight for the month
-            $totalWeight = isset($foodData[$dateString])
+            $totalWeightForMonth = isset($foodData[$dateString])
                 ? $foodData[$dateString]->sum('weight')
                 : 0; // If no data, set weight to 0
 
+            // Add the monthly weight to the total weight for the last 5 months
+            $totalWeightForFiveMonths += $totalWeightForMonth;
+
             $response[] = [
                 'month' => $monthName,
-                'weight' => $totalWeight,
+                'weight' => $totalWeightForMonth,
             ];
         }
 
-        return $this->sendResponse($response, "All food weight of the last five months.", null, 200);
+        // Return the formatted response with the total weight of the last 5 months
+        return $this->sendResponse(
+            [
+                'food_details' => $response,
+                'total_weight' => $totalWeightForFiveMonths,
+            ],
+            "All food weight of the last five months.",
+            null,
+            200
+        );
     }
+
 
 
 }
