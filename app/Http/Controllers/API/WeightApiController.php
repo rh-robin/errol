@@ -292,10 +292,15 @@ class WeightApiController extends Controller
     {
         $today = Carbon::today();
 
+        // Retrieve today's food data for the given pet
         $foods = FoodInfo::where('pet_id', $pet_id)
             ->whereDate('created_at', $today)
             ->get(['created_at', 'weight']);
 
+        // Calculate the total weight
+        $totalWeight = $foods->sum('weight');
+
+        // Map each food entry to include formatted time and weight
         $response = $foods->map(function ($food) {
             return [
                 'time' => $food->created_at->format('h:i A'), // Format time
@@ -303,8 +308,19 @@ class WeightApiController extends Controller
             ];
         });
 
-        return $this->sendResponse($response, "Today's all food weight.", '', 200);
+        // Add the total weight to the response
+        return $this->sendResponse(
+            [
+                'food_details' => $response,
+                'total_weight' => $totalWeight,
+            ],
+            "Today's all food weight and total weight.",
+            '',
+            200
+        );
     }
+
+
 
 
     /*========================== GET FOOD WEIGHT BY DATE ========================*/
