@@ -194,12 +194,16 @@ class PetApiController extends Controller
 
         try {
             if(Auth::check()) {
+
                 $user = Auth::user();
                 $user->selected_pet = $request->selected_pet;
                 $user->save();
 
+                $selected_pet = $request->selected_pet;
+                $selected_pet_profile = Pet::where('user_id', Auth::user()->id)->where('category', strtolower($selected_pet))->first();
                 $response = [
                     'selected_pet' => $user->selected_pet,
+                    'is_profile_created' => count($selected_pet_profile) < 1 ? false : true,
                 ];
 
                 return $this->sendResponse($response, 'Select pet saved successfully.');
