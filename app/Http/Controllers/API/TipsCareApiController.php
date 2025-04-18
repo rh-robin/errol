@@ -16,6 +16,24 @@ class TipsCareApiController extends Controller
         return $this->sendResponse($data, $message, '', 200);
     }
 
+
+    public function view($id)
+    {
+        try {
+            $data = TipsCare::find($id);
+
+            if (!$data) {
+                return $this->sendError('Tips and care data not found.', [], 404);
+            }
+
+            $message = 'Single tips and care details';
+            return $this->sendResponse($data, $message, '', 200);
+
+        } catch (\Exception $e) {
+            return $this->sendError('An error occurred while retrieving the data.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function terms(){
         return view('backend.layouts.terms_and_conditions');
     }
